@@ -1,8 +1,11 @@
 package br.com.kod3;
 
+import br.com.kod3.models.evolution.ConvertedDto;
+import br.com.kod3.models.evolution.TextMessageDto;
 import br.com.kod3.models.evolution.WebhookBodyDto;
 import br.com.kod3.models.transaction.Transaction;
 import br.com.kod3.models.user.User;
+import br.com.kod3.services.EvolutionApiService;
 import br.com.kod3.services.TransactionService;
 import br.com.kod3.services.UserService;
 import io.quarkus.logging.Log;
@@ -25,12 +28,26 @@ public class MainResource {
     @Inject
     TransactionService transactionService;
 
+    @Inject
+    EvolutionApiService evolutionApiService;
+
     @POST
     @Path("webhook")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes
     public Response webhook(@Valid WebhookBodyDto body) {
-        return Response.ok().header("FC-X-TYPE", parse(body).getType()).build();
+        var response = Response.ok();
+
+        ConvertedDto converted = parse(body);
+        var phone = converted.getTelefone();
+
+        if(!userService.existsByPhone(phone)){
+            var msg = new TextMessageDto(phone, "sem registro.");
+            evolutionApiService.sendMessage(msg);
+            return response.build();
+        }
+
+        return response.header("FC-X-TYPE", converted.getType()).build();
     }
 
 }

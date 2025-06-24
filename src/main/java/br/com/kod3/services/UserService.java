@@ -15,4 +15,8 @@ public class UserService {
     public List<User> findMany(){
         return userRepository.findAll().stream().toList();
     }
+
+    public Boolean existsByPhone(String phone){
+        return userRepository.existsByPhone(phone);
+    }
 }
