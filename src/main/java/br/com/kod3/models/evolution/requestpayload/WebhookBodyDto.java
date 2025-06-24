@@ -1,8 +1,8 @@
-package br.com.kod3.models.evolution;
+package br.com.kod3.models.evolution.requestpayload;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 
 public record WebhookBodyDto(
         String event,
@@ -36,12 +36,25 @@ public record WebhookBodyDto(
         ) {}
 
         public record MessageDto(
+                ListResponseMessageDto listResponseMessage,
                 String conversation,
                 AudioMessageDto audioMessage,
                 ImageMessageDto imageMessage,
                 @JsonProperty("messageContextInfo") MessageContextInfoDto messageContextInfo,
                 String base64
         ) {
+
+            public record ListResponseMessageDto(
+                    String title,
+                    String listType,
+                    SingleSelectReplyDto singleSelectReply,
+                    @JsonProperty("contextInfo") ContextInfoDto contextInfo,
+                    String description
+            ) {
+                public record SingleSelectReplyDto(
+                        String selectedRowId
+                ) {}
+            }
 
             public record ImageMessageDto(
                     String url,
@@ -91,8 +104,37 @@ public record WebhookBodyDto(
         }
 
         public record ContextInfoDto(
+                String stanzaId,
+                String participant,
+                QuotedMessageDto quotedMessage,
                 @JsonProperty("disappearingMode") DisappearingModeDto disappearingMode
         ) {
+
+            public record QuotedMessageDto(
+                    @JsonProperty("messageContextInfo") MessageDto.MessageContextInfoDto messageContextInfo,
+                    ListMessageDto listMessage
+            ) {
+                public record ListMessageDto(
+                        String title,
+                        String description,
+                        String buttonText,
+                        String listType,
+                        List<SectionDto> sections,
+                        String footerText
+                ) {
+                    public record SectionDto(
+                            String title,
+                            List<RowDto> rows
+                    ) {
+                        public record RowDto(
+                                String title,
+                                String description,
+                                String rowId
+                        ) {}
+                    }
+                }
+            }
+
             public record DisappearingModeDto(
                     String initiator
             ) {}

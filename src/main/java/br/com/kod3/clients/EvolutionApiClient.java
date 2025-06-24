@@ -1,6 +1,7 @@
 package br.com.kod3.clients;
 
-import br.com.kod3.models.evolution.TextMessageDto;
+import br.com.kod3.models.evolution.pool.EvolutionPoolDto;
+import br.com.kod3.models.evolution.requestpayload.TextMessageDto;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -17,4 +18,10 @@ public interface EvolutionApiClient {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     void sendMessage(TextMessageDto textMessageDto);
+
+    @POST
+    @Path("/message/sendPool/Finchat")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    void sendPool(EvolutionPoolDto pool);
 }

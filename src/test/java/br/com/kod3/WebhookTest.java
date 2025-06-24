@@ -1,6 +1,6 @@
 package br.com.kod3;
 
-import br.com.kod3.models.evolution.MessageType;
+import br.com.kod3.models.evolution.requestpayload.MessageType;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
@@ -208,6 +208,126 @@ public class WebhookTest {
 
     }
 
+    @Test
+    public void webhookResponseMessage(){
+        String responseMessagePayload = """
+                {
+                  "event": "messages.upsert",
+                  "instance": "Finchat",
+                  "data": {
+                    "key": {
+                      "remoteJid": "5511978703935@s.whatsapp.net",
+                      "fromMe": false,
+                      "id": "3EB08C4ECC5588D6786A2E"
+                    },
+                    "pushName": "Mariana M. Macêdo",
+                    "status": "DELIVERY_ACK",
+                    "message": {
+                      "messageContextInfo": {
+                        "deviceListMetadata": {
+                          "senderKeyHash": "2GZdtdx4m0aiRQ==",
+                          "senderTimestamp": "1748701972",
+                          "senderAccountType": "E2EE",
+                          "receiverAccountType": "E2EE",
+                          "recipientKeyHash": "aGIbAe0okuuVEw==",
+                          "recipientTimestamp": "1748853187"
+                        },
+                        "deviceListMetadataVersion": 2
+                      },
+                      "listResponseMessage": {
+                        "title": "arrojado",
+                        "listType": "SINGLE_SELECT",
+                        "singleSelectReply": {
+                          "selectedRowId": "arrojado"
+                        },
+                        "contextInfo": {
+                          "stanzaId": "3EB060F42B56D9F572036DD7DFD58C58F81A96DB",
+                          "participant": "5511991113699@s.whatsapp.net",
+                          "quotedMessage": {
+                            "messageContextInfo": {},
+                            "listMessage": {
+                              "title": "Pesquisa de perfil de investidor",
+                              "description": "Para começar a usar o Finchat, antes, é necessário cadastrar o seu perfil de investidor. Vamos lá?\\n\\nImagine que você está prestes a fazer um investimento de médio prazo (de 3 a 5 anos). Qual das alternativas abaixo mais se aproxima da sua atitude em relação ao risco?\\n",
+                              "buttonText": "Ver Opções",
+                              "listType": "SINGLE_SELECT",
+                              "sections": [
+                                {
+                                  "title": "Ações Disponíveis",
+                                  "rows": [
+                                    {
+                                      "title": "conservador",
+                                      "description": "Prefiro segurança e estabilidade. Aceito ganhar menos, desde que o valor investido esteja protegido. Fico desconfortável com oscilações ou perdas, mesmo que temporárias.",
+                                      "rowId": "conservador"
+                                    },
+                                    {
+                                      "title": "moderado",
+                                      "description": "Busco um equilíbrio entre segurança e rentabilidade. Estou disposto a aceitar alguma volatilidade em troca de retornos melhores no longo prazo, mas ainda valorizo uma certa previsibilidade.",
+                                      "rowId": "moderado"
+                                    },
+                                    {
+                                      "title": "arrojado",
+                                      "description": "Estou disposto a correr riscos maiores para buscar ganhos mais altos. Entendo que o investimento pode oscilar bastante e aceito possíveis perdas no curto prazo em busca de valorização futura.",
+                                      "rowId": "arrojado"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "footerText": ""
+                            }
+                          }
+                        },
+                        "description": "Estou disposto a correr riscos maiores para buscar ganhos mais altos. Entendo que o investimento pode oscilar bastante e aceito possíveis perdas no curto prazo em busca de valorização futura."
+                      }
+                    },
+                    "contextInfo": {
+                      "stanzaId": "3EB060F42B56D9F572036DD7DFD58C58F81A96DB",
+                      "participant": "5511991113699@s.whatsapp.net",
+                      "quotedMessage": {
+                        "messageContextInfo": {},
+                        "listMessage": {
+                          "title": "Pesquisa de perfil de investidor",
+                          "description": "Para começar a usar o Finchat, antes, é necessário cadastrar o seu perfil de investidor. Vamos lá?\\n\\nImagine que você está prestes a fazer um investimento de médio prazo (de 3 a 5 anos). Qual das alternativas abaixo mais se aproxima da sua atitude em relação ao risco?\\n",
+                          "buttonText": "Ver Opções",
+                          "listType": "SINGLE_SELECT",
+                          "sections": [
+                            {
+                              "title": "Ações Disponíveis",
+                              "rows": [
+                                {
+                                  "title": "conservador",
+                                  "description": "Prefiro segurança e estabilidade. Aceito ganhar menos, desde que o valor investido esteja protegido. Fico desconfortável com oscilações ou perdas, mesmo que temporárias.",
+                                  "rowId": "conservador"
+                                },
+                                {
+                                  "title": "moderado",
+                                  "description": "Busco um equilíbrio entre segurança e rentabilidade. Estou disposto a aceitar alguma volatilidade em troca de retornos melhores no longo prazo, mas ainda valorizo uma certa previsibilidade.",
+                                  "rowId": "moderado"
+                                },
+                                {
+                                  "title": "arrojado",
+                                  "description": "Estou disposto a correr riscos maiores para buscar ganhos mais altos. Entendo que o investimento pode oscilar bastante e aceito possíveis perdas no curto prazo em busca de valorização futura.",
+                                  "rowId": "arrojado"
+                                }
+                              ]
+                            }
+                          ],
+                          "footerText": ""
+                        }
+                      }
+                    },
+                    "messageType": "listResponseMessage",
+                    "messageTimestamp": 1749766033,
+                    "instanceId": "188cbb13-bcb7-4d5a-979d-ba0fe75a3ee9",
+                    "source": "web"
+                  },
+                  "destination": "https://n8n-nk44c4gg4o8w8s080kkwww80.wwwacedo.com/webhook/1becb0ac-5488-448e-9797-dbf9594c8a8e",
+                  "date_time": "2025-06-12T19:07:14.263Z",
+                  "sender": "5511991113699@s.whatsapp.net",
+                  "server_url": "https://evo-eo4kkc8ssckggkk0wos008ww.wwwacedo.com",
+                  "apikey": "0FABE7621441-4921-8196-42BF3953B6AA"
+                }
+                """;
+    }
 }
 
 
