@@ -34,7 +34,6 @@ public class Transaction extends PanacheEntityBase {
     @Column(name = "value")
     private BigDecimal value;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "category")
     private Category category;
 
