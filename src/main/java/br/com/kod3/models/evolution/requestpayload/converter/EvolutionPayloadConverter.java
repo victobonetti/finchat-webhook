@@ -6,12 +6,13 @@ import br.com.kod3.models.transaction.Category;
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.transaction.TransactionType;
 import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 
+@ApplicationScoped
 public class EvolutionPayloadConverter {
-  public EvolutionPayloadConverter() {}
 
-  public static ConvertedDto parse(WebhookBodyDto dto) {
+  public ConvertedDto parse(WebhookBodyDto dto) {
     MessageType type = dto.data().messageType();
     var builder =
         ConvertedDto.builder().type(type).telefone(dto.data().key().remoteJid().split("@")[0]);
@@ -47,7 +48,7 @@ public class EvolutionPayloadConverter {
         var transactionDto =
             TransactionPayloadDto.builder()
                 .business(q[0])
-                .category(Category.valueOf(q[1]))
+                .category(Category.fromDescricao(q[1].replace("Categoria: ", "")))
                 .value(new BigDecimal(currencyAndVal.replaceAll("[^\\d.,]+", "")))
                 .currency(currencyAndVal.replaceAll("[\\d\\s.,]+", ""))
                 .type(transactionType)
@@ -56,7 +57,7 @@ public class EvolutionPayloadConverter {
         builder.transactionPayloadDto(transactionDto);
 
       } catch (Exception e) {
-        Log.info("Não foi transação");
+        Log.info("Não foi encontrado payload de transação compatível;");
       }
 
       return builder.build();
