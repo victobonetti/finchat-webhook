@@ -5,8 +5,4 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class UserRepository implements PanacheRepositoryBase<User, String> {
-    public Boolean existsByPhone(String phone) {
-        return find("telefone", phone).count() == 1;
-    }
-}
+public class UserRepository implements PanacheRepositoryBase<User, String> {}

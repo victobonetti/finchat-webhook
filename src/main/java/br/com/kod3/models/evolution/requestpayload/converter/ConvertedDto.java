@@ -7,16 +7,11 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 
-
 @Getter
 @Builder
 public class ConvertedDto {
-    @NotBlank
-    private MessageType type;
-    @NotBlank
-    private String telefone;
-    @NotBlank
-    private String data;
-    @Nullable
-    private TransactionPayloadDto transactionPayloadDto;
+  @NotBlank private MessageType type;
+  @NotBlank private String telefone;
+  @NotBlank private String data;
+  @Nullable private TransactionPayloadDto transactionPayloadDto;
 }

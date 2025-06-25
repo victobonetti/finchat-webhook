@@ -5,25 +5,26 @@ import br.com.kod3.models.user.User;
 import br.com.kod3.repositories.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
-import java.util.List;
+import jakarta.transaction.Transactional;
 import java.util.Optional;
 
 @ApplicationScoped
 public class UserService {
-    @Inject
-    UserRepository userRepository;
+  @Inject UserRepository userRepository;
 
-    public List<User> findMany(){
-        return userRepository.findAll().stream().toList();
-    }
+  public Optional<User> findByPhone(String phone) {
+    return userRepository.find("telefone", phone).stream().findFirst();
+  }
 
-    public Optional<User> findByPhone(String phone){
-        return userRepository.find("telefone", phone).stream().findFirst();
-    }
-
-    public void atualizaPerfilInvestidor(User user, PerfilInvestidorType perfil) {
-        User.update("perfilInvestidor = ?1 where id = ?2", perfil, user.getId());
-        User.flush();
-    }
+  @Transactional
+  public void atualizaPerfilInvestidor(User user, PerfilInvestidorType perfil) {
+    userRepository
+        .getEntityManager()
+        .createNativeQuery(
+            "UPDATE \"user\" SET \"perfilInvestidor\" = ?1 :: \"PerfilInvestidorType\" WHERE id = ?2")
+        .setParameter(1, perfil.name())
+        .setParameter(2, user.getId())
+        .executeUpdate();
+    userRepository.flush();
+  }
 }

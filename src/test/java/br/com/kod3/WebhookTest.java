@@ -1,17 +1,18 @@
 package br.com.kod3;
 
+import static io.restassured.RestAssured.given;
+
 import br.com.kod3.models.evolution.requestpayload.MessageType;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
-
 @QuarkusTest
 public class WebhookTest {
-    @Test
-    public void webhookTextMessage(){
-        String textMessagePayload = """
+  @Test
+  public void webhookTextMessage() {
+    String textMessagePayload =
+        """
                 {
                             "event": "messages.upsert",
                             "instance": "Finchat",
@@ -51,21 +52,21 @@ public class WebhookTest {
                             }
                 """;
 
-        given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body(textMessagePayload)
-                .when()
-                .post("/v1/webhook")
-                .then()
-                .statusCode(200)
-                .header("FC-X-TYPE", String.valueOf(MessageType.conversation));
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(textMessagePayload)
+        .when()
+        .post("/v1/webhook")
+        .then()
+        .statusCode(200)
+        .header("FC-X-TYPE", String.valueOf(MessageType.conversation));
+  }
 
-    }
-
-    @Test
-    public void webhookImage(){
-        String imagePayload = """
+  @Test
+  public void webhookImage() {
+    String imagePayload =
+        """
                       {
                       "event": "messages.upsert",
                       "instance": "Finchat",
@@ -129,21 +130,21 @@ public class WebhookTest {
                     }
               """;
 
-        given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body(imagePayload)
-                .when()
-                .post("/v1/webhook")
-                .then()
-                .statusCode(200)
-                .header("FC-X-TYPE", String.valueOf(MessageType.imageMessage));
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(imagePayload)
+        .when()
+        .post("/v1/webhook")
+        .then()
+        .statusCode(200)
+        .header("FC-X-TYPE", String.valueOf(MessageType.imageMessage));
+  }
 
-    }
-
-    @Test
-    public void webhookAudio(){
-        String audioPayload = """
+  @Test
+  public void webhookAudio() {
+    String audioPayload =
+        """
                 {
                 "event": "messages.upsert",
                 "instance": "Finchat",
@@ -196,27 +197,27 @@ public class WebhookTest {
                 },
                 """;
 
-        given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body(audioPayload)
-                .when()
-                .post("/v1/webhook")
-                .then()
-                .statusCode(200)
-                .header("FC-X-TYPE", String.valueOf(MessageType.audioMessage));
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(audioPayload)
+        .when()
+        .post("/v1/webhook")
+        .then()
+        .statusCode(200)
+        .header("FC-X-TYPE", String.valueOf(MessageType.audioMessage));
+  }
 
-    }
-
-    @Test
-    public void webhookResponseMessage(){
-        String responseMessagePayload = """
+  @Test
+  public void webhookResponseMessage() {
+    String responseMessagePayload =
+        """
                 {
                   "event": "messages.upsert",
                   "instance": "Finchat",
                   "data": {
                     "key": {
-                      "remoteJid": "5511978703935@s.whatsapp.net",
+                      "remoteJid": "5519998467194@s.whatsapp.net",
                       "fromMe": false,
                       "id": "3EB08C4ECC5588D6786A2E"
                     },
@@ -242,7 +243,7 @@ public class WebhookTest {
                         },
                         "contextInfo": {
                           "stanzaId": "3EB060F42B56D9F572036DD7DFD58C58F81A96DB",
-                          "participant": "5511991113699@s.whatsapp.net",
+                          "participant": "5519998467194@s.whatsapp.net",
                           "quotedMessage": {
                             "messageContextInfo": {},
                             "listMessage": {
@@ -281,7 +282,7 @@ public class WebhookTest {
                     },
                     "contextInfo": {
                       "stanzaId": "3EB060F42B56D9F572036DD7DFD58C58F81A96DB",
-                      "participant": "5511991113699@s.whatsapp.net",
+                      "participant": "5519998467194@s.whatsapp.net",
                       "quotedMessage": {
                         "messageContextInfo": {},
                         "listMessage": {
@@ -322,12 +323,19 @@ public class WebhookTest {
                   },
                   "destination": "https://n8n-nk44c4gg4o8w8s080kkwww80.wwwacedo.com/webhook/1becb0ac-5488-448e-9797-dbf9594c8a8e",
                   "date_time": "2025-06-12T19:07:14.263Z",
-                  "sender": "5511991113699@s.whatsapp.net",
+                  "sender": "5519998467194@s.whatsapp.net",
                   "server_url": "https://evo-eo4kkc8ssckggkk0wos008ww.wwwacedo.com",
                   "apikey": "0FABE7621441-4921-8196-42BF3953B6AA"
                 }
                 """;
-    }
+    given()
+        .contentType(ContentType.JSON)
+        .accept(ContentType.JSON)
+        .body(responseMessagePayload)
+        .when()
+        .post("/v1/webhook")
+        .then()
+        .statusCode(200)
+        .header("FC-X-TYPE", String.valueOf(MessageType.listResponseMessage));
+  }
 }
-
-
