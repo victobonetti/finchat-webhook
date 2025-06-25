@@ -10,8 +10,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @ApplicationScoped
 @RegisterRestClient
 public class EvolutionApiService {
-  @RestClient
-  private EvolutionApiClient evoClient;
+  @RestClient private EvolutionApiClient evoClient;
 
   public void sendMessage(TextMessageDto textMessageDto) {
     evoClient.sendMessage(textMessageDto);
