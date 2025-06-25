@@ -132,7 +132,10 @@ public class WebhookTest {
     resource.webhook(mockDto);
 
     Mockito.verify(res, Mockito.times(1))
-        .send(CodigosDeResposta.ERRO, MessageType.listResponseMessage, Response.Status.BAD_REQUEST);
+        .send(
+            CodigosDeResposta.PERFIL_INVESTIDOR_INVALIDO,
+            MessageType.listResponseMessage,
+            Response.Status.BAD_REQUEST);
   }
 
   @Test
@@ -149,13 +152,15 @@ public class WebhookTest {
 
     Mockito.when(userService.findByPhone(TEST_PHONE))
         .thenReturn(
-            Optional.of(
-                User.builder().perfilInvestidor(PerfilInvestidorType.CADASTRO_PENDENTE).build()));
+            Optional.of(User.builder().perfilInvestidor(PerfilInvestidorType.ARROJADO).build()));
 
     resource.webhook(mockDto);
 
     Mockito.verify(res, Mockito.times(1))
-        .send(CodigosDeResposta.ERRO, MessageType.listResponseMessage, Response.Status.BAD_REQUEST);
+        .send(
+            CodigosDeResposta.ERRO_VALIDACAO_RESPOSTA_TRANSACAO,
+            MessageType.listResponseMessage,
+            Response.Status.BAD_REQUEST);
   }
 
   @Test
@@ -172,8 +177,7 @@ public class WebhookTest {
 
     Mockito.when(userService.findByPhone(TEST_PHONE))
         .thenReturn(
-            Optional.of(
-                User.builder().perfilInvestidor(PerfilInvestidorType.CADASTRO_PENDENTE).build()));
+            Optional.of(User.builder().perfilInvestidor(PerfilInvestidorType.ARROJADO).build()));
 
     resource.webhook(mockDto);
 
@@ -198,8 +202,7 @@ public class WebhookTest {
 
     Mockito.when(userService.findByPhone(TEST_PHONE))
         .thenReturn(
-            Optional.of(
-                User.builder().perfilInvestidor(PerfilInvestidorType.CADASTRO_PENDENTE).build()));
+            Optional.of(User.builder().perfilInvestidor(PerfilInvestidorType.ARROJADO).build()));
 
     resource.webhook(mockDto);
 

@@ -5,7 +5,6 @@ import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.transaction.Category;
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.transaction.TransactionType;
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 
@@ -28,8 +27,12 @@ public class EvolutionPayloadConverter {
     if (type.equals(MessageType.listResponseMessage)) {
       builder.data(dto.data().message().listResponseMessage().singleSelectReply().selectedRowId());
 
-      try {
-        var q = dto.data().contextInfo().quotedMessage().listMessage().description().split("\n");
+      var listMessage = dto.data().contextInfo().quotedMessage().listMessage();
+
+      var isTransactionPattern = listMessage.title().contains("Registrar ");
+
+      if (isTransactionPattern) {
+        var q = listMessage.description().split("\n");
         var currencyAndVal = q[2].replace("Valor: ", "");
 
         var transactionType =
@@ -55,9 +58,6 @@ public class EvolutionPayloadConverter {
                 .build();
 
         builder.transactionPayloadDto(transactionDto);
-
-      } catch (Exception e) {
-        Log.info("Não foi encontrado payload de transação compatível;");
       }
 
       return builder.build();

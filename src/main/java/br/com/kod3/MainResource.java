@@ -12,10 +12,7 @@ import br.com.kod3.models.evolution.requestpayload.converter.EvolutionPayloadCon
 import br.com.kod3.models.transaction.TransactionConverter;
 import br.com.kod3.models.user.PerfilInvestidorType;
 import br.com.kod3.models.user.User;
-import br.com.kod3.services.CodigosDeResposta;
-import br.com.kod3.services.EvolutionApiService;
-import br.com.kod3.services.TransactionService;
-import br.com.kod3.services.UserService;
+import br.com.kod3.services.*;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -28,86 +25,99 @@ import java.util.Optional;
 public class MainResource {
 
   @Inject UserService userService;
-
   @Inject TransactionService transactionService;
-
   @Inject EvolutionApiService evolutionApiService;
-
   @Inject ResponseHandler res;
-
   @Inject EvolutionPayloadConverter converter;
+
+  // Emitter<ConvertedDto> emitter;
 
   @POST
   @Path("webhook")
   @Produces(MediaType.APPLICATION_JSON)
-  @Consumes
+  @Consumes(MediaType.APPLICATION_JSON) // É uma boa prática definir o Consumes
   public Response webhook(@Valid WebhookBodyDto body) {
-
     final ConvertedDto converted = converter.parse(body);
-    final MessageType type = converted.getType();
-
     final String phone = converted.getTelefone();
-    final Optional<User> userOption = userService.findByPhone(phone);
+    final Optional<User> userOptional = userService.findByPhone(phone);
 
-    // User dos not exists
-    if (userOption.isEmpty()) {
-      var msg = new TextMessageDto(phone, "sem registro.");
-      evolutionApiService.sendMessage(msg);
-
-      return res.send(SOLICITA_CADASTRO, type, NO_CONTENT);
+    if (userOptional.isEmpty()) {
+      return handleNewUser(phone, converted.getType());
     }
 
-    final var user = userOption.get();
+    final User user = userOptional.get();
+    final EvolutionMessageSender evo = new EvolutionMessageSender(evolutionApiService, phone);
+
+    if (isInvestorProfilePending(user)) {
+      return handleInvestorProfilePending(user, converted, evo);
+    } else {
+      return handleRegisteredUser(user, converted, evo);
+    }
+  }
+
+  private Response handleNewUser(String phone, MessageType type) {
+    var msg = new TextMessageDto(phone, "sem registro.");
+    evolutionApiService.sendMessage(msg);
+    return res.send(SOLICITA_CADASTRO, type, NO_CONTENT);
+  }
+
+  private Response handleInvestorProfilePending(User user, ConvertedDto converted, EvolutionMessageSender evo) {
+    final MessageType type = converted.getType();
 
     if (Objects.isNull(user.getPerfilInvestidor())) {
-      var msg = new TextMessageDto(phone, "Vamos precisar cadastrar o seu perfil de investidor");
-      evolutionApiService.sendMessage(msg);
       userService.atualizaPerfilInvestidor(user, PerfilInvestidorType.CADASTRO_PENDENTE);
-      evolutionApiService.sendPool(EvolutionListFactory.getPerfilInvestidorPool(phone));
-
+      evo.send("Vamos precisar cadastrar o seu perfil de investidor.");
+      evo.opts(EvolutionListFactory.getPerfilInvestidorPool(user.getTelefone()));
       return res.send(INSERE_PENDENCIA_E_SOLICITA_PERFIL, type, CREATED);
     }
 
-    if (user.getPerfilInvestidor().equals(PerfilInvestidorType.CADASTRO_PENDENTE)) {
-      if (!converted.getType().equals(MessageType.listResponseMessage)) {
-        evolutionApiService.sendPool(EvolutionListFactory.getPerfilInvestidorPool(phone));
-
-        return res.send(CodigosDeResposta.SOLICITA_PERFIL, type, OK);
-      }
-
-      if (PerfilInvestidorType.getValidPerfisList().contains(converted.getData().toUpperCase())) {
-        userService.atualizaPerfilInvestidor(
-            user, PerfilInvestidorType.fromDescricao(converted.getData()));
-        var msg = new TextMessageDto(phone, "Agora você tem acesso total ao sistema");
-        evolutionApiService.sendMessage(msg);
-
-        return res.send(CONFIRMA_PERFIL, type, CREATED);
-      }
+    final boolean isListResponse = type.equals(MessageType.listResponseMessage);
+    if (!isListResponse) {
+      evo.opts(EvolutionListFactory.getPerfilInvestidorPool(user.getTelefone()));
+      return res.send(CodigosDeResposta.SOLICITA_PERFIL, type, OK);
     }
 
-    if (converted.getType().equals(MessageType.listResponseMessage)) {
-      if (converted.getData().toLowerCase().contains("confirmar")) {
-        var tran = converted.getTransactionPayloadDto();
-        Objects.requireNonNull(tran);
-        transactionService.createOne(TransactionConverter.toEntity(tran, user));
-        var msg = new TextMessageDto(phone, "Registro incluído;");
-        evolutionApiService.sendMessage(msg);
+    final String profileData = converted.getData().toUpperCase();
+    if (PerfilInvestidorType.getValidPerfisList().contains(profileData)) {
+      userService.atualizaPerfilInvestidor(user, PerfilInvestidorType.fromDescricao(converted.getData()));
+      evo.send("Agora você tem acesso total ao sistema");
+      return res.send(CONFIRMA_PERFIL, type, CREATED);
+    } else {
+      return res.send(CodigosDeResposta.PERFIL_INVESTIDOR_INVALIDO, type, BAD_REQUEST);
+    }
+  }
 
+  private Response handleRegisteredUser(User user, ConvertedDto converted, EvolutionMessageSender evo) {
+    final MessageType type = converted.getType();
+
+    final boolean isPrompt = Objects.isNull(converted.getTransactionPayloadDto()) && !type.equals(MessageType.listResponseMessage);
+    if (isPrompt) {
+      // emitter.send(converted);
+      return res.send(ENVIA_PROMPT, type, CREATED);
+    }
+
+    final boolean isTransactionResponse = !Objects.isNull(converted.getTransactionPayloadDto()) && type.equals(MessageType.listResponseMessage);
+    if (isTransactionResponse) {
+      final String data = converted.getData().toLowerCase();
+      if (data.contains("confirmar")) {
+        transactionService.createOne(TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user));
+        evo.send("Registro incluído;");
         return res.send(CONFIRMA_TRANSACAO, type, CREATED);
       }
 
-      if (converted.getData().toLowerCase().contains("cancelar")) {
-        var msg = new TextMessageDto(phone, "Registro cancelado;");
-        evolutionApiService.sendMessage(msg);
-
+      if (data.contains("cancelar")) {
+        evo.send("Registro cancelado;");
         return res.send(CANCELA_TRANSACAO, type, NO_CONTENT);
       }
 
-      return res.send(CodigosDeResposta.ERRO, type, Response.Status.BAD_REQUEST);
+      return res.send(ERRO_VALIDACAO_RESPOSTA_TRANSACAO, type, BAD_REQUEST);
     }
 
-    // Posta mensagem na fila
+    return res.send(CodigosDeResposta.CASO_DESCONHECIDO, type, BAD_REQUEST);
+  }
 
-    return res.send(CodigosDeResposta.ERRO, type, Response.Status.BAD_REQUEST);
+  private boolean isInvestorProfilePending(User user) {
+    return Objects.isNull(user.getPerfilInvestidor()) ||
+            user.getPerfilInvestidor().equals(PerfilInvestidorType.CADASTRO_PENDENTE);
   }
 }
