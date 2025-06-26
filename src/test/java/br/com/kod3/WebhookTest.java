@@ -7,10 +7,7 @@ import br.com.kod3.models.evolution.requestpayload.converter.EvolutionPayloadCon
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.user.PerfilInvestidorType;
 import br.com.kod3.models.user.User;
-import br.com.kod3.services.CodigosDeResposta;
-import br.com.kod3.services.EvolutionApiService;
-import br.com.kod3.services.TransactionService;
-import br.com.kod3.services.UserService;
+import br.com.kod3.services.*;
 import jakarta.ws.rs.core.Response;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -33,6 +30,8 @@ public class WebhookTest {
   @Mock ResponseHandler res;
 
   @Mock EvolutionPayloadConverter converter;
+
+  @Mock Messages messages;
 
   @InjectMocks MainResource resource;
 

@@ -5,14 +5,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import br.com.kod3.models.evolution.requestpayload.MessageType;
 import br.com.kod3.models.evolution.requestpayload.converter.EvolutionPayloadConverter;
 import br.com.kod3.utils.WebhookDtoFactory;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
+@QuarkusTest
 public class ConversorTest {
+
+  @Inject
+  EvolutionPayloadConverter c;
 
   @Test
   void test() {
-    var c = new EvolutionPayloadConverter();
-
     var expectedText = c.parse(WebhookDtoFactory.createWebhookTextMessage());
     var expectedImage = c.parse(WebhookDtoFactory.createWebhookImageMessage());
     var expectedAudio = c.parse(WebhookDtoFactory.createWebhookAudioMessage());

@@ -5,11 +5,15 @@ import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.transaction.Category;
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.transaction.TransactionType;
+import br.com.kod3.services.Messages;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.math.BigDecimal;
 
 @ApplicationScoped
 public class EvolutionPayloadConverter {
+
+  @Inject Messages messages;
 
   public ConvertedDto parse(WebhookBodyDto dto) {
     MessageType type = dto.data().messageType();
@@ -35,18 +39,21 @@ public class EvolutionPayloadConverter {
         var q = listMessage.description().split("\n");
         var currencyAndVal = q[2].replace("Valor: ", "");
 
-        var transactionType =
+        var title =
             dto.data()
-                    .message()
-                    .listResponseMessage()
-                    .contextInfo()
-                    .quotedMessage()
-                    .listMessage()
-                    .title()
-                    .replace("Registrar ", "")
-                    .equalsIgnoreCase("gasto")
+                .message()
+                .listResponseMessage()
+                .contextInfo()
+                .quotedMessage()
+                .listMessage()
+                .title();
+
+        TransactionType transactionType =
+            title.equalsIgnoreCase(messages.registrar_gasto())
                 ? TransactionType.EXPENSE
-                : TransactionType.INCOME;
+                : title.equalsIgnoreCase(messages.registrar_receita())
+                    ? TransactionType.INCOME
+                    : null;
 
         var transactionDto =
             TransactionPayloadDto.builder()

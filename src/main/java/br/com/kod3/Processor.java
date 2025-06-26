@@ -6,7 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 @ApplicationScoped
-public class MessageProcessor {
+public class Processor {
 
   @Incoming("my-channel")
   public void process(ConvertedDto dto) {

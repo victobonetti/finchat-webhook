@@ -1,7 +1,6 @@
-package br.com.kod3;
+package br.com.kod3.services;
 
 import br.com.kod3.models.evolution.requestpayload.MessageType;
-import br.com.kod3.services.CodigosDeResposta;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 
