@@ -30,12 +30,14 @@ public class MainResource {
   @Inject ResponseHandler res;
   @Inject EvolutionPayloadConverter converter;
 
-  // Emitter<ConvertedDto> emitter;
+  //  @Inject
+  //  @Channel("my-channel")
+  //  Emitter<ConvertedDto> emitter;
 
   @POST
   @Path("webhook")
   @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON) // É uma boa prática definir o Consumes
+  @Consumes(MediaType.APPLICATION_JSON)
   public Response webhook(@Valid WebhookBodyDto body) {
     final ConvertedDto converted = converter.parse(body);
     final String phone = converted.getTelefone();
@@ -61,7 +63,8 @@ public class MainResource {
     return res.send(SOLICITA_CADASTRO, type, NO_CONTENT);
   }
 
-  private Response handleInvestorProfilePending(User user, ConvertedDto converted, EvolutionMessageSender evo) {
+  private Response handleInvestorProfilePending(
+      User user, ConvertedDto converted, EvolutionMessageSender evo) {
     final MessageType type = converted.getType();
 
     if (Objects.isNull(user.getPerfilInvestidor())) {
@@ -79,7 +82,8 @@ public class MainResource {
 
     final String profileData = converted.getData().toUpperCase();
     if (PerfilInvestidorType.getValidPerfisList().contains(profileData)) {
-      userService.atualizaPerfilInvestidor(user, PerfilInvestidorType.fromDescricao(converted.getData()));
+      userService.atualizaPerfilInvestidor(
+          user, PerfilInvestidorType.fromDescricao(converted.getData()));
       evo.send("Agora você tem acesso total ao sistema");
       return res.send(CONFIRMA_PERFIL, type, CREATED);
     } else {
@@ -87,20 +91,26 @@ public class MainResource {
     }
   }
 
-  private Response handleRegisteredUser(User user, ConvertedDto converted, EvolutionMessageSender evo) {
+  private Response handleRegisteredUser(
+      User user, ConvertedDto converted, EvolutionMessageSender evo) {
     final MessageType type = converted.getType();
 
-    final boolean isPrompt = Objects.isNull(converted.getTransactionPayloadDto()) && !type.equals(MessageType.listResponseMessage);
+    final boolean isPrompt =
+        Objects.isNull(converted.getTransactionPayloadDto())
+            && !type.equals(MessageType.listResponseMessage);
     if (isPrompt) {
       // emitter.send(converted);
       return res.send(ENVIA_PROMPT, type, CREATED);
     }
 
-    final boolean isTransactionResponse = !Objects.isNull(converted.getTransactionPayloadDto()) && type.equals(MessageType.listResponseMessage);
+    final boolean isTransactionResponse =
+        !Objects.isNull(converted.getTransactionPayloadDto())
+            && type.equals(MessageType.listResponseMessage);
     if (isTransactionResponse) {
       final String data = converted.getData().toLowerCase();
       if (data.contains("confirmar")) {
-        transactionService.createOne(TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user));
+        transactionService.createOne(
+            TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user));
         evo.send("Registro incluído;");
         return res.send(CONFIRMA_TRANSACAO, type, CREATED);
       }
@@ -117,7 +127,7 @@ public class MainResource {
   }
 
   private boolean isInvestorProfilePending(User user) {
-    return Objects.isNull(user.getPerfilInvestidor()) ||
-            user.getPerfilInvestidor().equals(PerfilInvestidorType.CADASTRO_PENDENTE);
+    return Objects.isNull(user.getPerfilInvestidor())
+        || user.getPerfilInvestidor().equals(PerfilInvestidorType.CADASTRO_PENDENTE);
   }
 }
