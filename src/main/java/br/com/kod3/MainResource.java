@@ -13,6 +13,7 @@ import br.com.kod3.models.transaction.TransactionConverter;
 import br.com.kod3.models.user.PerfilInvestidorType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.services.*;
+import io.smallrye.reactive.messaging.annotations.Broadcast;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -20,6 +21,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Objects;
 import java.util.Optional;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 @Path("v1")
 public class MainResource {
@@ -30,9 +33,10 @@ public class MainResource {
   @Inject ResponseHandler res;
   @Inject EvolutionPayloadConverter converter;
 
-  //  @Inject
-  //  @Channel("my-channel")
-  //  Emitter<ConvertedDto> emitter;
+  @Inject
+  @Broadcast
+  @Channel("my-channel")
+  Emitter<ConvertedDto> emitter;
 
   @POST
   @Path("webhook")
@@ -99,7 +103,7 @@ public class MainResource {
         Objects.isNull(converted.getTransactionPayloadDto())
             && !type.equals(MessageType.listResponseMessage);
     if (isPrompt) {
-      // emitter.send(converted);
+      emitter.send(converted);
       return res.send(ENVIA_PROMPT, type, CREATED);
     }
 
