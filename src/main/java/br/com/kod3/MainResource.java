@@ -13,7 +13,6 @@ import br.com.kod3.models.user.PerfilInvestidorType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.models.user.UserDataDto;
 import br.com.kod3.services.*;
-import io.quarkus.logging.Log;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
