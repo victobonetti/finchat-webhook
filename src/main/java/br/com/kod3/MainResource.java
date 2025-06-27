@@ -50,7 +50,8 @@ public class MainResource {
 
     if (userOptional.isPresent()) {
       final EvolutionMessageSender evo = new EvolutionMessageSender(evolutionApiService, phone);
-      userService.atualizaPerfilInvestidor(userOptional.get(), PerfilInvestidorType.CADASTRO_PENDENTE);
+      userService.atualizaPerfilInvestidor(
+          userOptional.get(), PerfilInvestidorType.CADASTRO_PENDENTE);
       evo.send(solicita_perfil_investidor);
       evo.opts(EvolutionListFactory.getPerfilInvestidorPool(body.telefone()));
     }
@@ -65,9 +66,6 @@ public class MainResource {
   public Response webhook(@Valid WebhookBodyDto body) {
 
     final ConvertedDto converted = converter.parse(body);
-
-    Log.info("Converted:");
-    Log.info(converted);
 
     final String phone = converted.getTelefone();
     final Optional<User> userOptional = userService.findByPhone(phone);
