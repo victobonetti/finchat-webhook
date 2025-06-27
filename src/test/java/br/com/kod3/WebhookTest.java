@@ -8,7 +8,7 @@ import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.user.PerfilInvestidorType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.services.*;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +31,7 @@ public class WebhookTest {
 
   @Mock EvolutionPayloadConverter converter;
 
-  @Mock Messages messages;
+  @Mock ContainerRequestContext c;
 
   @InjectMocks MainResource resource;
 
@@ -47,8 +47,7 @@ public class WebhookTest {
 
     resource.webhook(mockDto);
 
-    Mockito.verify(res, Mockito.times(1))
-        .send(CodigosDeResposta.SOLICITA_CADASTRO, type, Response.Status.NO_CONTENT);
+    Mockito.verify(res, Mockito.times(1)).send(CodigosDeResposta.SOLICITA_CADASTRO, type);
   }
 
   @ParameterizedTest
@@ -64,7 +63,7 @@ public class WebhookTest {
     resource.webhook(mockDto);
 
     Mockito.verify(res, Mockito.times(1))
-        .send(CodigosDeResposta.INSERE_PENDENCIA_E_SOLICITA_PERFIL, type, Response.Status.CREATED);
+        .send(CodigosDeResposta.INSERE_PENDENCIA_E_SOLICITA_PERFIL, type);
   }
 
   @ParameterizedTest
@@ -83,8 +82,7 @@ public class WebhookTest {
 
     resource.webhook(mockDto);
 
-    Mockito.verify(res, Mockito.times(1))
-        .send(CodigosDeResposta.SOLICITA_PERFIL, type, Response.Status.OK);
+    Mockito.verify(res, Mockito.times(1)).send(CodigosDeResposta.SOLICITA_PERFIL, type);
   }
 
   @Test
@@ -106,10 +104,7 @@ public class WebhookTest {
     resource.webhook(mockDto);
 
     Mockito.verify(res, Mockito.times(1))
-        .send(
-            CodigosDeResposta.CONFIRMA_PERFIL,
-            MessageType.listResponseMessage,
-            Response.Status.CREATED);
+        .send(CodigosDeResposta.CONFIRMA_PERFIL, MessageType.listResponseMessage);
   }
 
   @Test
@@ -131,10 +126,7 @@ public class WebhookTest {
     resource.webhook(mockDto);
 
     Mockito.verify(res, Mockito.times(1))
-        .send(
-            CodigosDeResposta.PERFIL_INVESTIDOR_INVALIDO,
-            MessageType.listResponseMessage,
-            Response.Status.BAD_REQUEST);
+        .send(CodigosDeResposta.PERFIL_INVESTIDOR_INVALIDO, MessageType.listResponseMessage);
   }
 
   @Test
@@ -156,10 +148,7 @@ public class WebhookTest {
     resource.webhook(mockDto);
 
     Mockito.verify(res, Mockito.times(1))
-        .send(
-            CodigosDeResposta.ERRO_VALIDACAO_RESPOSTA_TRANSACAO,
-            MessageType.listResponseMessage,
-            Response.Status.BAD_REQUEST);
+        .send(CodigosDeResposta.ERRO_VALIDACAO_RESPOSTA_TRANSACAO, MessageType.listResponseMessage);
   }
 
   @Test
@@ -181,10 +170,7 @@ public class WebhookTest {
     resource.webhook(mockDto);
 
     Mockito.verify(res, Mockito.times(1))
-        .send(
-            CodigosDeResposta.CONFIRMA_TRANSACAO,
-            MessageType.listResponseMessage,
-            Response.Status.CREATED);
+        .send(CodigosDeResposta.CONFIRMA_TRANSACAO, MessageType.listResponseMessage);
   }
 
   @Test
@@ -206,9 +192,6 @@ public class WebhookTest {
     resource.webhook(mockDto);
 
     Mockito.verify(res, Mockito.times(1))
-        .send(
-            CodigosDeResposta.CANCELA_TRANSACAO,
-            MessageType.listResponseMessage,
-            Response.Status.NO_CONTENT);
+        .send(CodigosDeResposta.CANCELA_TRANSACAO, MessageType.listResponseMessage);
   }
 }

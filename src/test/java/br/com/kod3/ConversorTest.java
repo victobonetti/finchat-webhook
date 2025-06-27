@@ -12,8 +12,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 public class ConversorTest {
 
-  @Inject
-  EvolutionPayloadConverter c;
+  @Inject EvolutionPayloadConverter c;
 
   @Test
   void test() {

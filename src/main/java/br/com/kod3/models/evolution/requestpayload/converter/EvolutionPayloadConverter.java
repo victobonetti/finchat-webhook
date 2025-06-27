@@ -1,19 +1,18 @@
 package br.com.kod3.models.evolution.requestpayload.converter;
 
+import static br.com.kod3.services.Messages.registrar_gasto;
+import static br.com.kod3.services.Messages.registrar_receita;
+
 import br.com.kod3.models.evolution.requestpayload.MessageType;
 import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.transaction.Category;
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.transaction.TransactionType;
-import br.com.kod3.services.Messages;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import java.math.BigDecimal;
 
 @ApplicationScoped
 public class EvolutionPayloadConverter {
-
-  @Inject Messages messages;
 
   public ConvertedDto parse(WebhookBodyDto dto) {
     MessageType type = dto.data().messageType();
@@ -29,7 +28,7 @@ public class EvolutionPayloadConverter {
     }
 
     if (type.equals(MessageType.listResponseMessage)) {
-      builder.data(dto.data().message().listResponseMessage().singleSelectReply().selectedRowId());
+      builder.data(dto.data().message().listResponseMessage().title());
 
       var listMessage = dto.data().contextInfo().quotedMessage().listMessage();
 
@@ -49,11 +48,9 @@ public class EvolutionPayloadConverter {
                 .title();
 
         TransactionType transactionType =
-            title.equalsIgnoreCase(messages.registrar_gasto())
+            title.equalsIgnoreCase(registrar_gasto)
                 ? TransactionType.EXPENSE
-                : title.equalsIgnoreCase(messages.registrar_receita())
-                    ? TransactionType.INCOME
-                    : null;
+                : title.equalsIgnoreCase(registrar_receita) ? TransactionType.INCOME : null;
 
         var transactionDto =
             TransactionPayloadDto.builder()

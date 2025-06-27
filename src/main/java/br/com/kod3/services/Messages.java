@@ -1,106 +1,89 @@
 package br.com.kod3.services;
 
-import io.quarkus.qute.i18n.Message;
-import io.quarkus.qute.i18n.MessageBundle;
+public final class Messages {
 
-@MessageBundle
-public interface Messages {
-  @Message(
+  private Messages() {}
+
+  public static final String usuario_sem_registro =
       """
-      🚫 *Usuário não encontrado!*
-      
-      Parece que você ainda não tem um registro no nosso sistema.
-      Vamos te ajudar com isso! 😊
-      Você só precisa se cadastrar em:
-      
-      https://finchat-app-kappa.vercel.app
-      """)
-  String usuario_sem_registro();
+        🚫 *Usuário não encontrado!*
 
-  @Message(
+        Parece que você ainda não tem um registro no nosso sistema.
+        Vamos te ajudar com isso! 😊
+        Você só precisa se cadastrar em:
+
+        https://finchat-app-kappa.vercel.app
+        """;
+
+  public static final String solicita_perfil_investidor =
       """
-      📋 *Precisamos de uma informação importante!*
-      
-      Antes de continuar, precisamos cadastrar o seu *perfil de investidor*.
-      Isso leva só alguns minutinhos! 😉
-      """)
-  String solicita_perfil_investidor();
+        📋 *Precisamos de uma informação importante!*
 
-  @Message(
+        Antes de continuar, precisamos cadastrar o seu *perfil de investidor*.
+        Isso leva só alguns minutinhos! 😉
+        """;
+
+  public static final String acesso_total_sistema =
       """
-      ✅ *Tudo certo!*
-      
-      Seu acesso foi liberado. Agora você tem *acesso total* ao sistema! 🎉
-      Aproveite todos os recursos disponíveis! 🚀
-      """)
-  String acesso_total_sistema();
+        ✅ *Tudo certo!*
 
-  @Message(
+        Seu acesso foi liberado. Agora você tem *acesso total* ao sistema! 🎉
+        Aproveite todos os recursos disponíveis! 🚀
+        """;
+
+  public static final String perfil_investidor_invalido =
       """
-      ⚠️ *Perfil de investidor inválido!*
-      
-      Verifique as informações preenchidas e tente novamente.
-      Se precisar de ajuda, estamos aqui! 💬
-      """)
-  String perfil_investidor_invalido();
+        ⚠️ *Perfil de investidor inválido!*
 
-  @Message(
+        Verifique as informações preenchidas e tente novamente.
+        Se precisar de ajuda, estamos aqui! 💬
+        """;
+
+  public static final String erro_validacao_resposta_transacao =
       """
-      ❌ *Erro na validação da resposta da transação!*
-      
-      Algo deu errado ao processar a resposta.
-      Tente novamente em instantes ou entre em contato com o suporte. 🔧
-      """)
-  String erro_validacao_resposta_transacao();
+        ❌ *Erro na validação da resposta da transação!*
 
-  @Message("confirmar")
-  String confirma_transacao();
+        Algo deu errado ao processar a resposta.
+        Tente novamente em instantes ou entre em contato com o suporte. 🔧
+        """;
 
-  @Message("cancelar")
-  String cancela_transacao();
+  public static final String confirma_transacao = "confirmar";
 
-  @Message("Registro incluido")
-  String registro_incluido();
+  public static final String cancela_transacao = "cancelar";
 
-  @Message("Registro cancelado")
-  String registro_cancelado();
+  public static final String registro_incluido = "Registro incluido";
 
-  @Message("Registrar gasto")
-  String registrar_gasto();
+  public static final String registro_cancelado = "Registro cancelado";
 
-  @Message("Registrar receita")
-  String registrar_receita();
+  public static final String registrar_gasto = "Registrar gasto";
 
-  // PI
+  public static final String registrar_receita = "Registrar receita";
 
-  @Message("📊 *Qual o seu perfil de investidor?*")
-  String titulo_perfil_investidor();
+  public static final String titulo_perfil_investidor = "📊 *Qual o seu perfil de investidor?*";
 
-  @Message("🔎 Isso nos ajuda a recomendar melhores opções para você!")
-  String descricao_perfil_investidor();
+  public static final String descricao_perfil_investidor =
+      "🔎 Isso nos ajuda a recomendar melhores opções para você!";
 
-  @Message("Selecionar")
-  String botao_perfil_investidor();
+  public static final String botao_perfil_investidor = "Selecionar";
 
-  @Message("Responda com sinceridade para começarmos 🚀")
-  String rodape_perfil_investidor();
+  public static final String rodape_perfil_investidor =
+      "Responda com sinceridade para começarmos 🚀";
 
-  @Message("🛡️ Conservador")
-  String perfil_conservador_titulo();
+  public static final String perfil_conservador_titulo = "🛡️ Conservador";
 
-  @Message("Prefere segurança e estabilidade, mesmo que os ganhos sejam menores.")
-  String perfil_conservador_descricao();
+  public static final String perfil_conservador_descricao =
+      "Prefere segurança e estabilidade, mesmo que os ganhos sejam menores.";
 
-  @Message("⚖️ Moderado")
-  String perfil_moderado_titulo();
+  public static final String perfil_moderado_titulo = "⚖️ Moderado";
 
-  @Message("Busca equilíbrio entre segurança e rentabilidade, aceitando alguns riscos moderados.")
-  String perfil_moderado_descricao();
+  public static final String perfil_moderado_descricao =
+      "Busca equilíbrio entre segurança e rentabilidade, aceitando alguns riscos moderados.";
 
-  @Message("📈 Arrojado")
-  String perfil_arrojado_titulo();
+  public static final String perfil_arrojado_titulo = "📈 Arrojado";
 
-  @Message("Aceita correr riscos maiores em troca de maiores retornos no longo prazo.")
-  String perfil_arrojado_descricao();
+  public static final String perfil_arrojado_descricao =
+      "Aceita correr riscos maiores em troca de maiores retornos no longo prazo.";
 
+  public static final String enviando_prompt =
+      "Estamos processando sua mensagem... Aguarde alguns segundos...";
 }

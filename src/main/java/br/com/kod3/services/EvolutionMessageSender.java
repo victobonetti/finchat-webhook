@@ -16,5 +16,7 @@ public class EvolutionMessageSender {
     evolutionApiService.sendMessage(new TextMessageDto(this.phone, message));
   }
 
-  public void opts(EvolutionListDto listDto) {}
+  public void opts(EvolutionListDto listDto) {
+    evolutionApiService.sendPool(listDto);
+  }
 }

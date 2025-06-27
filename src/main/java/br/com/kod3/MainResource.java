@@ -1,7 +1,7 @@
 package br.com.kod3;
 
 import static br.com.kod3.services.CodigosDeResposta.*;
-import static jakarta.ws.rs.core.Response.Status.*;
+import static br.com.kod3.services.Messages.*;
 
 import br.com.kod3.models.evolution.list.EvolutionListFactory;
 import br.com.kod3.models.evolution.requestpayload.MessageType;
@@ -11,7 +11,9 @@ import br.com.kod3.models.evolution.requestpayload.converter.EvolutionPayloadCon
 import br.com.kod3.models.transaction.TransactionConverter;
 import br.com.kod3.models.user.PerfilInvestidorType;
 import br.com.kod3.models.user.User;
+import br.com.kod3.models.user.UserDataDto;
 import br.com.kod3.services.*;
+import io.quarkus.logging.Log;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -31,7 +33,6 @@ public class MainResource {
   @Inject EvolutionApiService evolutionApiService;
   @Inject ResponseHandler res;
   @Inject EvolutionPayloadConverter converter;
-  @Inject Messages messages;
 
   @Inject
   @Broadcast
@@ -39,18 +40,41 @@ public class MainResource {
   Emitter<ConvertedDto> emitter;
 
   @POST
+  @Path("webhook/ask-investor-profile")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response askInvestorProfile(@Valid UserDataDto body) {
+
+    final String phone = body.telefone();
+    final Optional<User> userOptional = userService.findByPhone(phone);
+
+    if (userOptional.isPresent()) {
+      final EvolutionMessageSender evo = new EvolutionMessageSender(evolutionApiService, phone);
+      evo.send(solicita_perfil_investidor);
+      evo.opts(EvolutionListFactory.getPerfilInvestidorPool(body.telefone()));
+    }
+
+    return Response.ok().build();
+  }
+
+  @POST
   @Path("webhook")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public Response webhook(@Valid WebhookBodyDto body) {
+
     final ConvertedDto converted = converter.parse(body);
+
+    Log.info("Converted:");
+    Log.info(converted);
+
     final String phone = converted.getTelefone();
     final Optional<User> userOptional = userService.findByPhone(phone);
 
     final EvolutionMessageSender evo = new EvolutionMessageSender(evolutionApiService, phone);
 
     if (userOptional.isEmpty()) {
-      return handleNewUser(phone, converted.getType(), evo);
+      return handleNewUser(converted.getType(), evo);
     }
 
     final User user = userOptional.get();
@@ -62,9 +86,9 @@ public class MainResource {
     }
   }
 
-  private Response handleNewUser(String phone, MessageType type, EvolutionMessageSender evo) {
-    evo.send(messages.usuario_sem_registro());
-    return res.send(SOLICITA_CADASTRO, type, NO_CONTENT);
+  private Response handleNewUser(MessageType type, EvolutionMessageSender evo) {
+    evo.send(usuario_sem_registro);
+    return res.send(SOLICITA_CADASTRO, type);
   }
 
   private Response handleInvestorProfilePending(
@@ -73,28 +97,30 @@ public class MainResource {
 
     if (Objects.isNull(user.getPerfilInvestidor())) {
       userService.atualizaPerfilInvestidor(user, PerfilInvestidorType.CADASTRO_PENDENTE);
-      evo.send(messages.solicita_perfil_investidor());
-      evo.opts(EvolutionListFactory.getPerfilInvestidorPool(user.getTelefone(), messages));
-      return res.send(INSERE_PENDENCIA_E_SOLICITA_PERFIL, type, CREATED);
+      evo.send(solicita_perfil_investidor);
+      evo.opts(EvolutionListFactory.getPerfilInvestidorPool(user.getTelefone()));
+      return res.send(INSERE_PENDENCIA_E_SOLICITA_PERFIL, type);
     }
 
     final boolean isListResponse = type.equals(MessageType.listResponseMessage);
     if (!isListResponse) {
-      evo.opts(EvolutionListFactory.getPerfilInvestidorPool(user.getTelefone(), messages));
-      return res.send(CodigosDeResposta.SOLICITA_PERFIL, type, OK);
+      evo.opts(EvolutionListFactory.getPerfilInvestidorPool(user.getTelefone()));
+      return res.send(CodigosDeResposta.SOLICITA_PERFIL, type);
     }
 
     final String profileData = converted.getData().toUpperCase();
-    if (PerfilInvestidorType.getValidPerfisList().contains(profileData)) {
-      userService.atualizaPerfilInvestidor(
-          user, PerfilInvestidorType.fromDescricao(converted.getData()));
-      evo.send(messages.acesso_total_sistema());
-      return res.send(CONFIRMA_PERFIL, type, CREATED);
-    } else {
-      evo.send(messages.perfil_investidor_invalido());
-      evo.opts(EvolutionListFactory.getPerfilInvestidorPool(user.getTelefone(), messages));
-      return res.send(CodigosDeResposta.PERFIL_INVESTIDOR_INVALIDO, type, BAD_REQUEST);
+
+    for (var p : PerfilInvestidorType.getValidPerfisList()) {
+      if (profileData.contains(p)) {
+        userService.atualizaPerfilInvestidor(user, PerfilInvestidorType.fromDescricao(p));
+        evo.send(acesso_total_sistema);
+        return res.send(CONFIRMA_PERFIL, type);
+      }
     }
+
+    evo.send(perfil_investidor_invalido);
+    evo.opts(EvolutionListFactory.getPerfilInvestidorPool(user.getTelefone()));
+    return res.send(CodigosDeResposta.PERFIL_INVESTIDOR_INVALIDO, type);
   }
 
   private Response handleRegisteredUser(
@@ -105,8 +131,9 @@ public class MainResource {
         Objects.isNull(converted.getTransactionPayloadDto())
             && !type.equals(MessageType.listResponseMessage);
     if (isPrompt) {
+      evo.send(enviando_prompt);
       emitter.send(converted);
-      return res.send(ENVIA_PROMPT, type, CREATED);
+      return res.send(ENVIA_PROMPT, type);
     }
 
     final boolean isTransactionResponse =
@@ -114,24 +141,24 @@ public class MainResource {
             && type.equals(MessageType.listResponseMessage);
     if (isTransactionResponse) {
       final String data = converted.getData().toLowerCase();
-      if (data.toLowerCase().contains("confirmar")) {
+      if (data.equals(confirma_transacao)) {
         transactionService.createOne(
             TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user));
-        evo.send(messages.registro_incluido());
-        return res.send(CONFIRMA_TRANSACAO, type, CREATED);
+        evo.send(registro_incluido);
+        return res.send(CONFIRMA_TRANSACAO, type);
       }
 
-      if (data.toLowerCase().contains("cancelar")) {
-        evo.send(messages.registro_cancelado());
-        return res.send(CANCELA_TRANSACAO, type, NO_CONTENT);
+      if (data.equals(cancela_transacao)) {
+        evo.send(registro_cancelado);
+        return res.send(CANCELA_TRANSACAO, type);
       }
 
-      evo.send(messages.erro_validacao_resposta_transacao());
-      return res.send(ERRO_VALIDACAO_RESPOSTA_TRANSACAO, type, BAD_REQUEST);
+      evo.send(erro_validacao_resposta_transacao);
+      return res.send(ERRO_VALIDACAO_RESPOSTA_TRANSACAO, type);
     }
 
-    evo.send(messages.erro_validacao_resposta_transacao());
-    return res.send(CodigosDeResposta.CASO_DESCONHECIDO, type, BAD_REQUEST);
+    evo.send(erro_validacao_resposta_transacao);
+    return res.send(CodigosDeResposta.CASO_DESCONHECIDO, type);
   }
 
   private boolean isInvestorProfilePending(User user) {
