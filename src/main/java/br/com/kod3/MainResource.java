@@ -50,6 +50,7 @@ public class MainResource {
 
     if (userOptional.isPresent()) {
       final EvolutionMessageSender evo = new EvolutionMessageSender(evolutionApiService, phone);
+      userService.atualizaPerfilInvestidor(userOptional.get(), PerfilInvestidorType.CADASTRO_PENDENTE);
       evo.send(solicita_perfil_investidor);
       evo.opts(EvolutionListFactory.getPerfilInvestidorPool(body.telefone()));
     }
