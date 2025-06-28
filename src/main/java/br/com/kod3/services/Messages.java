@@ -57,7 +57,7 @@ public final class Messages {
 
   public static final String registrar_gasto = "Registrar gasto";
 
-  public static final String registrar_receita = "Registrar receita";
+  public static final String registrar_receita = "Registrar entrada";
 
   public static final String titulo_perfil_investidor = "📊 *Qual o seu perfil de investidor?*";
 
