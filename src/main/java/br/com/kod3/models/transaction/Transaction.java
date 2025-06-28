@@ -10,8 +10,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 @Builder
 @Entity
@@ -35,8 +37,8 @@ public class Transaction extends PanacheEntityBase {
   @Column(name = "category")
   private Category category;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "type", columnDefinition = "\"TransactionType\"")
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(name = "type", columnDefinition = "public.\"TransactionType\"")
   private TransactionType type;
 
   @Column(name = "currency")

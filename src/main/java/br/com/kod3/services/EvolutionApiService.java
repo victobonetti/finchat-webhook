@@ -2,6 +2,7 @@ package br.com.kod3.services;
 
 import br.com.kod3.clients.EvolutionApiClient;
 import br.com.kod3.models.evolution.list.EvolutionListDto;
+import br.com.kod3.models.evolution.requestpayload.EvolutionReactionDto;
 import br.com.kod3.models.evolution.requestpayload.TextMessageDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -18,5 +19,9 @@ public class EvolutionApiService {
 
   public void sendPool(EvolutionListDto pool) {
     evoClient.sendPool(pool);
+  }
+
+  public void sendReaction(EvolutionReactionDto r) {
+    evoClient.sendReaction(r);
   }
 }

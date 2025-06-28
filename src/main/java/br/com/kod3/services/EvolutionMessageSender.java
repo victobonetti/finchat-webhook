@@ -1,6 +1,7 @@
 package br.com.kod3.services;
 
 import br.com.kod3.models.evolution.list.EvolutionListDto;
+import br.com.kod3.models.evolution.requestpayload.EvolutionReactionDto;
 import br.com.kod3.models.evolution.requestpayload.TextMessageDto;
 
 public class EvolutionMessageSender {
@@ -18,5 +19,10 @@ public class EvolutionMessageSender {
 
   public void opts(EvolutionListDto listDto) {
     evolutionApiService.sendPool(listDto);
+  }
+
+  public void like(String remoteJid, String messageId) {
+    var dto = new EvolutionReactionDto(remoteJid, messageId);
+    evolutionApiService.sendReaction(dto);
   }
 }

@@ -56,6 +56,7 @@ public record WebhookBodyDto(
           String directPath,
           String mediaKeyTimestamp,
           String jpegThumbnail,
+          String caption,
           @JsonProperty("contextInfo") ContextInfoDto contextInfo,
           boolean viewOnce) {}
 

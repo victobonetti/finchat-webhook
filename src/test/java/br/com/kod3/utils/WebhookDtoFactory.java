@@ -82,13 +82,10 @@ public class WebhookDtoFactory {
                     "/o1/v/t24/f2/m231/AQOKPiNAxv9_A1PYxrPhIISOBI518MCc6HjwO9NpWyFBjP_HFY0AfuuStjomP9usfwJzTo5IsiyFiS70jvqePxMfpaAyo8sOO90VbDjD7Q?ccb=9-4&oh=01_Q5Aa1wGeCyyO1R76WdG0HhS2F8wtnUPd6dKSnDjuYeMFFR22tw&oe=6872C90E&_nc_sid=e6ed6c",
                     "1749763927",
                     "/9j/4AAQSkZJRgABAQAAAQABAAD",
-                    new ContextInfoDto(
-                        null,
-                        null,
-                        null,
-                        new ContextInfoDto.DisappearingModeDto("CHANGED_IN_CHAT")),
+                    null,
+                    null,
                     false),
-                new MessageDto.MessageContextInfoDto(
+                new MessageDto.MessageContextInfoDto( // Added missing context info
                     new MessageDto.MessageContextInfoDto.DeviceListMetadataDto(
                         "2GZdtdx4m0aiRQ==",
                         "1748701972",
@@ -97,13 +94,12 @@ public class WebhookDtoFactory {
                         "E2EE",
                         "E2EE"),
                     2,
-                    "peNjpRGGocTlYJph2bn/V2KsuJyq91BgTbucOEMVJpk="),
-                "/9j/4AAQSkZJRgABAQAAAQABAAD" // base64
+                    null),
+                null // base64
                 ),
-            new ContextInfoDto(
-                null, null, null, new ContextInfoDto.DisappearingModeDto("CHANGED_IN_CHAT")),
+            null,
             MessageType.imageMessage,
-            1749766171L,
+            1749763927L,
             "188cbb13-bcb7-4d5a-979d-ba0fe75a3ee9",
             "web"),
         "https://n8n-nk44c4gg4o8w8s080kkwww80.wwwacedo.com/webhook/1becb0ac-5488-448e-9797-dbf9594c8a8e",
@@ -153,8 +149,7 @@ public class WebhookDtoFactory {
                         null),
                     2,
                     "xd3KB2k8b4FTF3IOJSflwYyB+OrFbt2bLlbaEsQEUjM="),
-                "T2dnUwACAAAAAAAAAABkAAAAAAAAADI5MFABE09wdXNIZWFkAQE4AYA" // base64
-                ),
+                "T2dnUwACAAAAAAAAAABkAAAAAAAAADI5MFABE09wdXNIZWFkAQE4AYA"),
             null, // contextInfo
             MessageType.audioMessage,
             1749766134L,

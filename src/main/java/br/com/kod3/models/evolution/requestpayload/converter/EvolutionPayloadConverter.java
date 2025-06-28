@@ -10,6 +10,7 @@ import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.transaction.TransactionType;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @ApplicationScoped
 public class EvolutionPayloadConverter {
@@ -17,9 +18,21 @@ public class EvolutionPayloadConverter {
   public ConvertedDto parse(WebhookBodyDto dto) {
     MessageType type = dto.data().messageType();
     var builder =
-        ConvertedDto.builder().type(type).telefone(dto.data().key().remoteJid().split("@")[0]);
+        ConvertedDto.builder()
+            .messageId(dto.data().key().id())
+            .type(type)
+            .telefone(dto.data().key().remoteJid().split("@")[0])
+            .remoteJid(dto.data().key().remoteJid());
 
-    if (type.equals(MessageType.audioMessage) || type.equals(MessageType.imageMessage)) {
+    if (type.equals(MessageType.audioMessage)) {
+      return builder.data(dto.data().message().base64()).build();
+    }
+
+    if (type.equals(MessageType.imageMessage)) {
+      String caption = dto.data().message().imageMessage().caption();
+      if (!Objects.isNull(caption)) {
+        builder.caption(caption);
+      }
       return builder.data(dto.data().message().base64()).build();
     }
 
@@ -54,7 +67,7 @@ public class EvolutionPayloadConverter {
 
         var transactionDto =
             TransactionPayloadDto.builder()
-                .business(q[0])
+                .business(q[0].replace("Descrição: ", ""))
                 .category(Category.fromDescricao(q[1].replace("Categoria: ", "")))
                 .value(new BigDecimal(currencyAndVal.replaceAll("[^\\d.,]+", "")))
                 .currency(currencyAndVal.replaceAll("[\\d\\s.,]+", ""))

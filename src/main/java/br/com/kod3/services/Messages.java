@@ -51,9 +51,9 @@ public final class Messages {
 
   public static final String cancela_transacao = "cancelar";
 
-  public static final String registro_incluido = "Registro incluido";
+  public static final String registro_incluido = "Registro incluído ✅";
 
-  public static final String registro_cancelado = "Registro cancelado";
+  public static final String registro_cancelado = "Registro cancelado ❌";
 
   public static final String registrar_gasto = "Registrar gasto";
 

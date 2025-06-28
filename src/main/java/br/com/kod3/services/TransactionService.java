@@ -5,6 +5,7 @@ import br.com.kod3.repositories.TransactionRepository;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 @ApplicationScoped
@@ -15,8 +16,9 @@ public class TransactionService {
     return transactionRepository.findAll().stream().toList();
   }
 
+  @Transactional
   public void createOne(Transaction transaction) {
-    Log.info("Criada nova transação: " + transaction);
     transactionRepository.persistAndFlush(transaction);
+    Log.info("Criada nova transação: " + transaction);
   }
 }

@@ -77,6 +77,8 @@ public class MainResource {
 
     final User user = userOptional.get();
 
+    converted.setUserId(user.getId());
+
     if (isInvestorProfilePending(user)) {
       return handleInvestorProfilePending(user, converted, evo);
     } else {
@@ -129,7 +131,7 @@ public class MainResource {
         Objects.isNull(converted.getTransactionPayloadDto())
             && !type.equals(MessageType.listResponseMessage);
     if (isPrompt) {
-      evo.send(enviando_prompt);
+      evo.like(converted.getRemoteJid(), converted.getMessageId());
       emitter.send(converted);
       return res.send(ENVIA_PROMPT, type);
     }
@@ -139,14 +141,14 @@ public class MainResource {
             && type.equals(MessageType.listResponseMessage);
     if (isTransactionResponse) {
       final String data = converted.getData().toLowerCase();
-      if (data.equals(confirma_transacao)) {
+      if (data.contains(confirma_transacao)) {
         transactionService.createOne(
             TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user));
         evo.send(registro_incluido);
         return res.send(CONFIRMA_TRANSACAO, type);
       }
 
-      if (data.equals(cancela_transacao)) {
+      if (data.contains(cancela_transacao)) {
         evo.send(registro_cancelado);
         return res.send(CANCELA_TRANSACAO, type);
       }
