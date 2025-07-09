@@ -2,6 +2,8 @@ package br.com.kod3.services;
 
 import br.com.kod3.models.transaction.Transaction;
 import br.com.kod3.repositories.TransactionRepository;
+import io.quarkus.cache.CacheInvalidate;
+import io.quarkus.cache.CacheKey;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -17,8 +19,9 @@ public class TransactionService {
   }
 
   @Transactional
-  public void createOne(Transaction transaction) {
+  @CacheInvalidate(cacheName = "has-transaction-today")
+  public void createOne(Transaction transaction, @CacheKey String userId) {
     transactionRepository.persistAndFlush(transaction);
-    Log.info("Criada nova transação: " + transaction);
+    Log.info("Criada nova transação para o usuario" + userId + ": " + transaction);
   }
 }

@@ -13,7 +13,8 @@ public enum CodigosDeResposta {
   CANCELA_TRANSACAO(6),
   ENVIA_PROMPT(7),
   CASO_DESCONHECIDO(8),
-  PERFIL_INVESTIDOR_INVALIDO(9);
+  PERFIL_INVESTIDOR_INVALIDO(9),
+  ERRO_INTERNO(10);
 
   final Integer codigo;
 

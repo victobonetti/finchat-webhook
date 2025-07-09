@@ -35,7 +35,6 @@ public class CorsFilter implements ContainerResponseFilter, ContainerRequestFilt
     logMessage.append("URI: ").append(requestContext.getUriInfo().getAbsolutePath()).append("\n");
     logMessage.append("Method: ").append(requestContext.getMethod()).append("\n");
 
-    // Log Headers
     logMessage.append("Headers: {\n");
     requestContext
         .getHeaders()
@@ -44,28 +43,19 @@ public class CorsFilter implements ContainerResponseFilter, ContainerRequestFilt
                 logMessage.append("  ").append(key).append(": ").append(value).append("\n"));
     logMessage.append("}\n");
 
-    // --- Log Request Body ---
-    // The request entity stream can only be read once. To log the body, we must
-    // read the stream, store its content, and then replace the original stream
-    // with a new one containing the stored content. This allows the JAX-RS
-    // framework and your application to read the body as if it were untouched.
     if (requestContext.hasEntity()) {
-      // Read the original stream into a byte array
       byte[] requestBodyBytes = requestContext.getEntityStream().readAllBytes();
 
-      // Convert byte array to a string for logging
       String requestBody = new String(requestBodyBytes, StandardCharsets.UTF_8);
       logMessage.append("Body: \n").append(requestBody).append("\n");
 
-      // IMPORTANT: Replace the consumed stream with a new one
       requestContext.setEntityStream(new ByteArrayInputStream(requestBodyBytes));
     } else {
       logMessage.append("Body: [No Body Present]\n");
     }
 
-    logMessage.append("------------------------\n");
+    logMessage.append("----------------------------------\n");
 
-    // Use a logger to print the details. This is better practice than System.out.
     LOG.log(Level.INFO, logMessage.toString());
   }
 

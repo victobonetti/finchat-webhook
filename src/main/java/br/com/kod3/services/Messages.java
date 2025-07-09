@@ -23,6 +23,8 @@ public final class Messages {
         Isso leva só alguns minutinhos! 😉
         """;
 
+  public static final String erro_interno = "Ocorreu um erro interno ao processar a solicitação.";
+
   public static final String acesso_total_sistema =
       """
         ✅ *Tudo certo!*
@@ -45,7 +47,7 @@ public final class Messages {
 
         Algo deu errado ao processar a resposta.
         Tente novamente em instantes ou entre em contato com o suporte. 🔧
-        """;
+      """;
 
   public static final String confirma_transacao = "confirmar";
 

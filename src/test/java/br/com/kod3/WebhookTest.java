@@ -33,6 +33,8 @@ public class WebhookTest {
 
   @Mock ContainerRequestContext c;
 
+  @Mock StreakService streakService;
+
   @InjectMocks MainResource resource;
 
   private final String TEST_TXT = "teste";

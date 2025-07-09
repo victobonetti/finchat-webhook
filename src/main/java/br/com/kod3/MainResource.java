@@ -8,11 +8,13 @@ import br.com.kod3.models.evolution.requestpayload.MessageType;
 import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.evolution.requestpayload.converter.EvolutionPayloadConverter;
+import br.com.kod3.models.streak.StreakResponseDto;
 import br.com.kod3.models.transaction.TransactionConverter;
 import br.com.kod3.models.user.PerfilInvestidorType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.models.user.UserDataDto;
 import br.com.kod3.services.*;
+import io.quarkus.logging.Log;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -30,6 +32,7 @@ public class MainResource {
   @Inject UserService userService;
   @Inject TransactionService transactionService;
   @Inject EvolutionApiService evolutionApiService;
+  @Inject StreakService streakService;
   @Inject ResponseHandler res;
   @Inject EvolutionPayloadConverter converter;
 
@@ -37,6 +40,14 @@ public class MainResource {
   @Broadcast
   @Channel("my-channel")
   Emitter<ConvertedDto> emitter;
+
+  @POST
+  @Path("webhook/get-streak")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getUserStreak(@QueryParam("uid") String userId){
+    Log.info("Obtendo streaks para usuario " + userId);
+    return Response.ok().entity(new StreakResponseDto(userId, streakService.getStreakFromUserId(userId))).build();
+  }
 
   @POST
   @Path("webhook/ask-investor-profile")
@@ -71,18 +82,25 @@ public class MainResource {
 
     final EvolutionMessageSender evo = new EvolutionMessageSender(evolutionApiService, phone);
 
-    if (userOptional.isEmpty()) {
-      return handleNewUser(converted.getType(), evo);
-    }
+    try {
+      if (userOptional.isEmpty()) {
+        return handleNewUser(converted.getType(), evo);
+      }
 
-    final User user = userOptional.get();
+      final User user = userOptional.get();
 
-    converted.setUserId(user.getId());
+      converted.setUserId(user.getId());
 
-    if (isInvestorProfilePending(user)) {
-      return handleInvestorProfilePending(user, converted, evo);
-    } else {
-      return handleRegisteredUser(user, converted, evo);
+      if (isInvestorProfilePending(user)) {
+        return handleInvestorProfilePending(user, converted, evo);
+      } else {
+        return handleRegisteredUser(user, converted, evo);
+      }
+    } catch(Exception e) {
+        Log.info(erro_interno);
+        Log.error(e);
+        evo.send(erro_interno);
+        return res.send(ERRO_INTERNO, null);
     }
   }
 
@@ -142,9 +160,17 @@ public class MainResource {
     if (isTransactionResponse) {
       final String data = converted.getData().toLowerCase();
       if (data.contains(confirma_transacao)) {
+
+        var shouldShowStreak = !streakService.hasTransactionToday(user.getId());
+
         transactionService.createOne(
-            TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user));
+            TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user), user.getId());
         evo.send(registro_incluido);
+
+        if (shouldShowStreak){
+            handleStreak(user, evo);
+        }
+
         return res.send(CONFIRMA_TRANSACAO, type);
       }
 
@@ -159,6 +185,15 @@ public class MainResource {
 
     evo.send(erro_validacao_resposta_transacao);
     return res.send(CodigosDeResposta.CASO_DESCONHECIDO, type);
+  }
+
+  private void handleStreak(User user, EvolutionMessageSender evo) {
+    var streak = streakService.getStreakFromUserId(user.getId());
+    if (streak == 1){
+      evo.send("Sua ofensiva começou! Continue assim! \uFE0F\u200D\uD83D\uDD25\uD83D\uDC2F");
+    } else {
+      evo.send("Sua ofensiva está em " + streak + " dias. Continue assim! \uFE0F\u200D\uD83D\uDD25\uD83D\uDC2F");
+    }
   }
 
   private boolean isInvestorProfilePending(User user) {
