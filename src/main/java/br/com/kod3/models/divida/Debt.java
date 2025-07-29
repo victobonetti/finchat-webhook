@@ -1,12 +1,10 @@
-package br.com.kod3.models.transaction;
+package br.com.kod3.models.divida;
 
-import br.com.kod3.models.divida.Debt;
-import br.com.kod3.models.recorrencia.Recorrencia;
+import br.com.kod3.models.transaction.Category;
+import br.com.kod3.models.transaction.TransactionType;
 import br.com.kod3.models.user.User;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,13 +15,16 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "\"Transaction\"")
-public class Transaction extends PanacheEntityBase {
+@Table(name = "\"DEBT\"")
+public class Debt extends PanacheEntityBase {
 
   @Id
   @UuidGenerator
@@ -33,28 +34,19 @@ public class Transaction extends PanacheEntityBase {
   @Column(name = "business")
   private String business;
 
-  @Column(name = "value")
-  private BigDecimal value;
+  @Column(name = "paidValue")
+  private BigDecimal paidValue;
+
+  @Column(name = "totalValue")
+  private BigDecimal totalValue;
 
   @Column(name = "category")
   private Category category;
 
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "type", columnDefinition = "public.\"TransactionType\"")
-  private TransactionType type;
-
   @Column(name = "currency")
   private String currency;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true)
-  @JoinColumn(name = "\"recorrenciaId\"", nullable = true)
-  private Recorrencia recorrencia;
-
-  @ManyToOne(fetch = FetchType.LAZY, optional = true)
-  @JoinColumn(name = "\"debtId\"", nullable = true)
-  private Debt divida;
-
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "\"userId\"", nullable = false)
   private User user;
 

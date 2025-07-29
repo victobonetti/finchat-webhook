@@ -15,6 +15,11 @@ public final class Messages {
         https://finchat-app-kappa.vercel.app
         """;
 
+  public static final String erro_parse =
+          """
+            Ocorreu um erro ao processar sua mensagem. Desative o modo de mensagens temporátias, ou aguarde alguns minutos.
+          """;
+
   public static final String solicita_perfil_investidor =
       """
         📋 *Precisamos de uma informação importante!*
@@ -60,6 +65,12 @@ public final class Messages {
   public static final String registrar_gasto = "Registrar gasto";
 
   public static final String registrar_receita = "Registrar entrada";
+
+  public static final String registrar_gasto_recorrente = "Registrar gasto recorrente";
+
+  public static final String registrar_receita_recorrente = "Registrar receita recorrente";
+
+  public static final String registrar_divida = "Registrar dívida";
 
   public static final String titulo_perfil_investidor = "📊 *Qual o seu perfil de investidor?*";
 

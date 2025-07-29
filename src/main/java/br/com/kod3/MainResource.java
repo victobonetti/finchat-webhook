@@ -3,13 +3,16 @@ package br.com.kod3;
 import static br.com.kod3.services.CodigosDeResposta.*;
 import static br.com.kod3.services.Messages.*;
 
+import br.com.kod3.models.divida.DebtConverter;
 import br.com.kod3.models.evolution.list.EvolutionListFactory;
 import br.com.kod3.models.evolution.requestpayload.MessageType;
 import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.evolution.requestpayload.converter.EvolutionPayloadConverter;
+import br.com.kod3.models.recorrencia.RecorrenciaConverter;
 import br.com.kod3.models.streak.StreakResponseDto;
 import br.com.kod3.models.transaction.TransactionConverter;
+import br.com.kod3.models.transaction.TransactionType;
 import br.com.kod3.models.user.PerfilInvestidorType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.models.user.UserDataDto;
@@ -30,11 +33,14 @@ import org.eclipse.microprofile.reactive.messaging.Emitter;
 public class MainResource {
 
   @Inject UserService userService;
-  @Inject TransactionService transactionService;
   @Inject EvolutionApiService evolutionApiService;
   @Inject StreakService streakService;
   @Inject ResponseHandler res;
   @Inject EvolutionPayloadConverter converter;
+
+  @Inject TransactionService transactionService;
+  @Inject DebtService debtService;
+  @Inject RecorrenciaService recorrenciaService;
 
   @Inject
   @Broadcast
@@ -75,12 +81,15 @@ public class MainResource {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response webhook(@Valid WebhookBodyDto body) {
 
-    final ConvertedDto converted = converter.parse(body);
+    final EvolutionMessageSender evo = new EvolutionMessageSender(
+            evolutionApiService,
+            body.data().key().remoteJid().split("@")[0]
+            );
+
+    var converted = convert(body, evo);
 
     final String phone = converted.getTelefone();
     final Optional<User> userOptional = userService.findByPhone(phone);
-
-    final EvolutionMessageSender evo = new EvolutionMessageSender(evolutionApiService, phone);
 
     try {
       if (userOptional.isEmpty()) {
@@ -102,6 +111,17 @@ public class MainResource {
         evo.send(erro_interno);
         return res.send(ERRO_INTERNO, null);
     }
+  }
+
+  private ConvertedDto convert(WebhookBodyDto body, EvolutionMessageSender evo){
+    ConvertedDto converted;
+    try {
+      converted = converter.parse(body);
+    } catch (RuntimeException r) {
+      evo.send(erro_parse);
+      throw r;
+    }
+    return converted;
   }
 
   private Response handleNewUser(MessageType type, EvolutionMessageSender evo) {
@@ -154,37 +174,63 @@ public class MainResource {
       return res.send(ENVIA_PROMPT, type);
     }
 
-    final boolean isTransactionResponse =
-        !Objects.isNull(converted.getTransactionPayloadDto())
-            && type.equals(MessageType.listResponseMessage);
-    if (isTransactionResponse) {
-      final String data = converted.getData().toLowerCase();
-      if (data.contains(confirma_transacao)) {
-
-        var shouldShowStreak = !streakService.hasTransactionToday(user.getId());
-
-        transactionService.createOne(
-            TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user), user.getId());
-        evo.send(registro_incluido);
-
-        if (shouldShowStreak){
-            handleStreak(user, evo);
-        }
-
-        return res.send(CONFIRMA_TRANSACAO, type);
-      }
-
-      if (data.contains(cancela_transacao)) {
-        evo.send(registro_cancelado);
-        return res.send(CANCELA_TRANSACAO, type);
+    if (!Objects.isNull(converted.getTransactionPayloadDto()) && type.equals(MessageType.listResponseMessage)) {
+      if (converted.getTransactionPayloadDto().getType().equals(TransactionType.INCOME) || converted.getTransactionPayloadDto().getType().equals(TransactionType.EXPENSE)) {
+        return handleDefaultTransaction(converted, user, evo);
+      } else if (converted.getTransactionPayloadDto().getType().equals(TransactionType.DEBT)) {
+        return handleDebt(converted, user, evo);
+      } else if (converted.getTransactionPayloadDto().getType().equals(TransactionType.RECORRENT_EXPENSE) || converted.getTransactionPayloadDto().getType().equals(TransactionType.RECORRENT_INCOME)) {
+        return handleRecorrencia(converted, user, evo);
       }
 
       evo.send(erro_validacao_resposta_transacao);
       return res.send(ERRO_VALIDACAO_RESPOSTA_TRANSACAO, type);
     }
-
     evo.send(erro_validacao_resposta_transacao);
     return res.send(CodigosDeResposta.CASO_DESCONHECIDO, type);
+  }
+
+  private Response handleRecorrencia(ConvertedDto converted, User user, EvolutionMessageSender evo) {
+
+    recorrenciaService.createOne(RecorrenciaConverter.toEntity(converted.getTransactionPayloadDto(), user));
+
+    evo.send(erro_validacao_resposta_transacao);
+    return res.send(ERRO_INTERNO, converted.getType());
+  }
+
+  private Response handleDebt(ConvertedDto converted, User user, EvolutionMessageSender evo) {
+
+    debtService.createOne(DebtConverter.toEntity(converted.getTransactionPayloadDto(), user));
+
+    evo.send(erro_validacao_resposta_transacao);
+    return res.send(ERRO_INTERNO, converted.getType());
+  }
+
+  private Response handleDefaultTransaction (ConvertedDto converted, User user, EvolutionMessageSender evo){
+    final String data = converted.getData().toLowerCase();
+
+    if (data.contains(confirma_transacao)) {
+
+      var shouldShowStreak = !streakService.hasTransactionToday(user.getId());
+
+      transactionService.createOne(
+              TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user), user.getId());
+      evo.send(registro_incluido);
+
+      if (shouldShowStreak){
+        handleStreak(user, evo);
+      }
+
+      evo.send(erro_validacao_resposta_transacao);
+      return res.send(ERRO_INTERNO, converted.getType());
+    }
+
+    if (data.contains(cancela_transacao)) {
+      evo.send(registro_cancelado);
+      return res.send(CANCELA_TRANSACAO, converted.getType());
+    }
+
+    return res.send(ERRO_INTERNO, converted.getType());
   }
 
   private void handleStreak(User user, EvolutionMessageSender evo) {
