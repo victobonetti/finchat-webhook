@@ -56,6 +56,12 @@ public final class Messages {
 
   public static final String confirma_transacao = "confirmar";
 
+  public static final String divida_criada = "Dívida criada ✅";
+
+  public static final String gasto_recorrente_criado = "Gasto recorrente criado ✅";
+
+  public static final String receita_recorrente_criada = "Receita recorrente criada ✅";
+
   public static final String cancela_transacao = "cancelar";
 
   public static final String registro_incluido = "Registro incluído ✅";

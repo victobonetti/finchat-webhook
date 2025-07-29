@@ -191,22 +191,37 @@ public class MainResource {
   }
 
   private Response handleRecorrencia(ConvertedDto converted, User user, EvolutionMessageSender evo) {
+    Objects.requireNonNull(converted.getTransactionPayloadDto());
 
     recorrenciaService.createOne(RecorrenciaConverter.toEntity(converted.getTransactionPayloadDto(), user));
+    transactionService.createOne(TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user), user.getId());
+
+    if (converted.getTransactionPayloadDto().getType().equals(TransactionType.RECORRENT_INCOME)) {
+      evo.send(receita_recorrente_criada);
+      return res.send(CONFIRMA_TRANSACAO, converted.getType());
+    }
+
+    if (converted.getTransactionPayloadDto().getType().equals(TransactionType.RECORRENT_EXPENSE)) {
+      evo.send(gasto_recorrente_criado);
+      return res.send(CONFIRMA_TRANSACAO, converted.getType());
+    }
 
     evo.send(erro_validacao_resposta_transacao);
     return res.send(ERRO_INTERNO, converted.getType());
   }
 
   private Response handleDebt(ConvertedDto converted, User user, EvolutionMessageSender evo) {
+    Objects.requireNonNull(converted.getTransactionPayloadDto());
 
     debtService.createOne(DebtConverter.toEntity(converted.getTransactionPayloadDto(), user));
 
-    evo.send(erro_validacao_resposta_transacao);
-    return res.send(ERRO_INTERNO, converted.getType());
+    evo.send(divida_criada);
+    return res.send(CONFIRMA_TRANSACAO, converted.getType());
   }
 
   private Response handleDefaultTransaction (ConvertedDto converted, User user, EvolutionMessageSender evo){
+    Objects.requireNonNull(converted.getTransactionPayloadDto());
+
     final String data = converted.getData().toLowerCase();
 
     if (data.contains(confirma_transacao)) {
