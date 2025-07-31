@@ -48,6 +48,10 @@ public class Recorrencia extends PanacheEntityBase {
   private LocalDate paymentDay;
 
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(name = "type", columnDefinition = "public.\"PeriodEnum\"")
+  private PeriodEnum period;
+
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Column(name = "type", columnDefinition = "public.\"TransactionType\"")
   private TransactionType type;
 
