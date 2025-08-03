@@ -3,6 +3,7 @@ package br.com.kod3.repositories;
 import br.com.kod3.models.recorrencia.PeriodEnum;
 import br.com.kod3.models.recorrencia.Recorrencia;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.LocalDate;
@@ -13,35 +14,18 @@ import java.util.List;
 public class RecorrenciaRepository implements PanacheRepositoryBase<Recorrencia, String> {
 
     public List<Recorrencia> findByDiaDoMes() {
-        int dayOfMonth = LocalDate.now().getDayOfMonth();         // 1–31
-        int dayOfWeek = LocalDate.now().getDayOfWeek().getValue(); // 1 (Monday) – 7 (Sunday)
+        int dayOfMonth = LocalDate.now().getDayOfMonth();
+        int dayOfWeek = LocalDate.now().getDayOfWeek().getValue();
 
-        List<Recorrencia> mensal = getEntityManager()
-                .createQuery("""
-                        SELECT r FROM Recorrencia r
-                        WHERE EXTRACT(DAY FROM r.paymentDay) = :dayOfMonth
-                        AND r.period = :period
-                        """, Recorrencia.class)
-                .setParameter("dayOfMonth", dayOfMonth)
-                .setParameter("period", PeriodEnum.MENSAL)
-                .getResultList();
+        String query = "(dayOfMonth = :dayOfMonth AND period = :mensal) OR (dayOfWeek = :dayOfWeek AND period = :semanal)";
 
-        List<Recorrencia> semanal = getEntityManager()
-                .createQuery("""
-                        SELECT r FROM Recorrencia r
-                        WHERE EXTRACT(DOW FROM r.paymentDay) = :dayOfWeek
-                        AND r.period = :period
-                        """, Recorrencia.class)
-                .setParameter("dayOfWeek", dayOfWeek % 7) // convert Java's 1–7 (Mon–Sun) to PostgreSQL's 0–6 (Sun–Sat)
-                .setParameter("period", PeriodEnum.SEMANAL)
-                .getResultList();
+        Parameters params = Parameters
+                .with("dayOfMonth", dayOfMonth)
+                .and("dayOfWeek", dayOfWeek)
+                .and("mensal", PeriodEnum.MENSAL)
+                .and("semanal", PeriodEnum.SEMANAL);
 
-        // Combine both lists
-        List<Recorrencia> result = new ArrayList<>();
-        result.addAll(mensal);
-        result.addAll(semanal);
-
-        return result;
+        return list(query, params);
     }
 }
 

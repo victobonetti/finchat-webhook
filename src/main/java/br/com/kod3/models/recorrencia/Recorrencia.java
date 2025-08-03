@@ -3,6 +3,7 @@ package br.com.kod3.models.recorrencia;
 import br.com.kod3.models.transaction.Category;
 import br.com.kod3.models.transaction.TransactionType;
 import br.com.kod3.models.user.User;
+import br.com.kod3.models.util.SituacaoEnum;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -48,12 +49,22 @@ public class Recorrencia extends PanacheEntityBase {
   private LocalDate paymentDay;
 
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "type", columnDefinition = "public.\"PeriodEnum\"")
+  @Column(name = "period", columnDefinition = "public.\"periodenum\"")
   private PeriodEnum period;
 
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "type", columnDefinition = "public.\"TransactionType\"")
+  @Column(name = "type", columnDefinition = "public.\"transactiontype\"")
   private TransactionType type;
+
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(name = "situacao", columnDefinition = "public.\"situacaoenum\"")
+  private SituacaoEnum situacao;
+
+  @Column(name = "dayOfMonth")
+  private Integer dayOfMonth;
+
+  @Column(name = "dayOfWeek")
+  private Integer dayOfWeek;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "\"userId\"", nullable = false)

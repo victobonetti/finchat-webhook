@@ -40,7 +40,7 @@ public class Transaction extends PanacheEntityBase {
   private Category category;
 
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "type", columnDefinition = "public.\"TransactionType\"")
+  @Column(name = "type", columnDefinition = "public.\"transactiontype\"")
   private TransactionType type;
 
   @Column(name = "currency")

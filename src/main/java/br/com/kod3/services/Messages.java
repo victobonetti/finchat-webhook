@@ -56,6 +56,10 @@ public final class Messages {
 
   public static final String confirma_transacao = "confirmar";
 
+  public static final String confirma_transacao_descricao = "✅ confirmar essa transação (registrar)";
+
+  public static final String cancela_transacao_descricao = "❌ cancelar essa transação (não registrar)";
+
   public static final String divida_criada = "Dívida criada ✅";
 
   public static final String gasto_recorrente_criado = "Gasto recorrente criado ✅";
@@ -68,15 +72,15 @@ public final class Messages {
 
   public static final String registro_cancelado = "Registro cancelado ❌";
 
-  public static final String registrar_gasto = "Registrar gasto";
+  public static final String registrar_gasto = "\uD83D\uDCB0 Registrar gasto";
 
-  public static final String registrar_receita = "Registrar entrada";
+  public static final String registrar_receita = "\uD83D\uDCB0 Registrar entrada";
 
-  public static final String registrar_gasto_recorrente = "Registrar gasto recorrente";
+  public static final String registrar_gasto_recorrente = "\uD83D\uDCB0 Registrar gasto recorrente";
 
-  public static final String registrar_receita_recorrente = "Registrar receita recorrente";
+  public static final String registrar_receita_recorrente = "\uD83D\uDCB0 Registrar receita recorrente";
 
-  public static final String registrar_divida = "Registrar dívida";
+  public static final String registrar_divida = "\uD83D\uDCB0 Registrar divida";
 
   public static final String titulo_perfil_investidor = "📊 *Qual o seu perfil de investidor?*";
 
@@ -105,4 +109,6 @@ public final class Messages {
 
   public static final String enviando_prompt =
       "Estamos processando sua mensagem... Aguarde alguns segundos...";
+
+  public static final String conferencia_registro_recorrente = "Foi encontrado um registro recorrente par ao dia atual. Por favor, confirme o registro.";
 }

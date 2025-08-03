@@ -3,6 +3,8 @@ package br.com.kod3.models.recorrencia;
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.user.User;
 
+import java.time.DayOfWeek;
+
 
 public class RecorrenciaConverter {
 
@@ -16,6 +18,8 @@ public class RecorrenciaConverter {
                 .type(dto.getType())
                 .currency(dto.getCurrency())
                 .paymentDay(dto.getDate())
+                .dayOfWeek(DayOfWeek.from(dto.getDate()).getValue())
+                .dayOfMonth(dto.getDate().getDayOfMonth())
                 .period(dto.getPeriod())
                 .user(user)
                 .build();

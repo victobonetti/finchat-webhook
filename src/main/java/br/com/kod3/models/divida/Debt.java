@@ -3,12 +3,10 @@ package br.com.kod3.models.divida;
 import br.com.kod3.models.transaction.Category;
 import br.com.kod3.models.transaction.TransactionType;
 import br.com.kod3.models.user.User;
+import br.com.kod3.models.util.SituacaoEnum;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -35,6 +33,7 @@ public class Debt extends PanacheEntityBase {
   private String business;
 
   @Column(name = "paidValue")
+  @Setter
   private BigDecimal paidValue;
 
   @Column(name = "totalValue")
@@ -45,6 +44,10 @@ public class Debt extends PanacheEntityBase {
 
   @Column(name = "currency")
   private String currency;
+
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(name = "situacao", columnDefinition = "public.\"situacaoenum\"")
+  private SituacaoEnum situacao;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "\"userId\"", nullable = false)

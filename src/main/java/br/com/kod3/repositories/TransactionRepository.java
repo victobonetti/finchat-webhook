@@ -2,10 +2,15 @@ package br.com.kod3.repositories;
 
 import br.com.kod3.models.transaction.Transaction;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.NoResultException;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.List;
 
 @ApplicationScoped
 public class TransactionRepository implements PanacheRepositoryBase<Transaction, String> {
@@ -47,5 +52,15 @@ public class TransactionRepository implements PanacheRepositoryBase<Transaction,
         } catch (NoResultException e) {
             return 0;
         }
+    }
+
+    public List<Transaction> findByUserAndDateRange(String userId, LocalDate start, LocalDate end) {
+        return find(
+                "user.id = ?1 and createdAt >= ?2 and createdAt <= ?3", // TODO
+                Sort.by("createdAt").descending(),
+                userId,
+                start.atStartOfDay(),
+                end.atTime(LocalTime.MAX)
+        ).list();
     }
 }
