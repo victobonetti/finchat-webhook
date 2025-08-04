@@ -1,6 +1,7 @@
 package br.com.kod3.models.recorrencia;
 
 import br.com.kod3.models.transaction.Category;
+import br.com.kod3.models.transaction.Transaction;
 import br.com.kod3.models.transaction.TransactionType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.models.util.SituacaoEnum;
@@ -19,6 +20,7 @@ import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Entity
@@ -69,6 +71,14 @@ public class Recorrencia extends PanacheEntityBase {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "\"userId\"", nullable = false)
   private User user;
+
+  @OneToMany(
+          mappedBy = "recorrencia",
+          cascade = CascadeType.ALL,
+          orphanRemoval = true,
+          fetch = FetchType.LAZY)
+  @Getter
+  private List<Transaction> transactions;
 
   @CreationTimestamp
   @Column(name = "\"createdAt\"")

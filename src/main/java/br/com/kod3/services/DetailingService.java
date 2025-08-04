@@ -53,32 +53,11 @@ public class DetailingService {
         return new Detail(rf.formatRecorrenciaReport(userTransactions));
     }
 
-    public Detail getFormattedRecorrencias(String uid, String recorrenciaId) {
-        Recorrencia r = recorrenciaService.getById(recorrenciaId);
-        List<Transaction> t = transactionService.getTransactionsFromRecorrencia(recorrenciaId, uid);
-
-        if (t.isEmpty()) {
-            return new Detail("No transactions found for the selected period.");
-        }
-
-        return new Detail(rf.formatRecorrenciaDetailReport(r, t));
-    }
-
     public Detail getFormattedDebts(String uid) {
         List<Debt> userDebts = debtService.getDebitsFromUser(uid);
 
         return new Detail(df.formatDebtReport(userDebts));
     }
 
-    public Detail getFormattedDebts(String uid, String debtId) {
-        List<Transaction> userTransactions = transactionService.getTransactionsFromDebt(uid, debtId);
-        Debt debt = debtService.getDebtById(debtId);
-
-        if (userTransactions.isEmpty()) {
-            return new Detail("No transactions found for the selected period.");
-        }
-
-        return new Detail(df.formatDebtDetailReport(debt, userTransactions));
-    }
 
 }

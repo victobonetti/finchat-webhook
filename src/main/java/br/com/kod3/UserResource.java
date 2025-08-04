@@ -60,31 +60,12 @@ public class UserResource {
     }
 
     @GET
-    @Path("{uid}/recurring-transactions/{recId}/transactions")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getTransactionsFromRecorrencia(@PathParam("uid") String uid, @QueryParam("recId") String recId) {
-        Objects.requireNonNull(uid);
-        Objects.requireNonNull(recId);
-
-        return Response.ok(detailingService.getFormattedRecorrencias(uid, recId)).build();
-    }
-
-    @GET
     @Path("{uid}/debts")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDebtsFromUser(@PathParam("uid") String uid) {
         Objects.requireNonNull(uid);
 
         return Response.ok(detailingService.getFormattedDebts(uid)).build();
-    }
-
-    @GET
-    @Path("{uid}/debts/{debtId}/transactions")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getTransactionsFromDebt(@PathParam("uid") String uid, @QueryParam("debtId") String debtId) {
-        Objects.requireNonNull(uid);
-
-        return Response.ok(detailingService.getFormattedDebts(uid, debtId)).build();
     }
 
     @POST

@@ -17,81 +17,79 @@ public class RecorrenciaFormatter implements Formatter {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    /**
+     * Generates a comprehensive report for a list of recurrences, detailing each
+     * recurrence and its associated transactions, followed by an overall summary.
+     *
+     * @param recorrencias A list of Recorrencia objects, where each is expected
+     * to contain its own list of associated transactions.
+     * @return A formatted string report.
+     */
     public String formatRecorrenciaReport(List<Recorrencia> recorrencias) {
         if (recorrencias == null || recorrencias.isEmpty()) {
-            return "No recurring transactions found.";
+            return "No recurring transactions to report.";
         }
 
-        Map<TransactionType, List<Recorrencia>> groupedByType = recorrencias.stream()
-                .collect(Collectors.groupingBy(Recorrencia::getType, TreeMap::new, Collectors.toList()));
+        FormatedStringBuilder response = new FormatedStringBuilder();
+        response.append("===== Recurring Transactions Report =====");
 
-        BigDecimal totalExpenses = recorrencias.stream()
+        // Process each recurrence and its own transactions
+        for (Recorrencia rec : recorrencias) {
+            response.append(""); // Add a space before the new section
+            response.append(String.format(
+                    "[%s] %s: %.2f %s every %s",
+                    rec.getType().name().replace("RECORRENT_", ""), // More concise type name
+                    rec.getBusiness(),
+                    rec.getValue(),
+                    rec.getCurrency(),
+                    rec.getPeriod()
+            ));
+            response.append(String.format(
+                    "  - Category: %s | Payment Day: %s",
+                    rec.getCategory(),
+                    rec.getPaymentDay().format(DATE_FORMATTER)
+            ));
+
+            List<Transaction> transactions = rec.getTransactions();
+            if (transactions == null || transactions.isEmpty()) {
+                response.append("  -> No transactions generated for this recurrence yet.");
+            } else {
+                response.append("  -> Generated Transactions:");
+
+                // Calculate total for this specific recurrence's transactions
+                BigDecimal totalForThisRecurrence = transactions.stream()
+                        .map(Transaction::getValue)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                for (Transaction tx : transactions) {
+                    response.append(String.format(
+                            "    - [%s] %.2f",
+                            tx.getCreatedAt().toLocalDate().format(DATE_FORMATTER),
+                            tx.getValue()
+                    ));
+                }
+                response.append(String.format("  -> Subtotal: %.2f", totalForThisRecurrence));
+            }
+            response.append("---");
+        }
+
+        // Calculate overall summary totals based on the scheduled values of recurrences
+        BigDecimal totalScheduledExpenses = recorrencias.stream()
                 .filter(r -> r.getType() == TransactionType.RECORRENT_EXPENSE)
                 .map(Recorrencia::getValue)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal totalSavings = recorrencias.stream()
+        BigDecimal totalScheduledIncome = recorrencias.stream()
                 .filter(r -> r.getType() == TransactionType.RECORRENT_INCOME)
                 .map(Recorrencia::getValue)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        FormatedStringBuilder response = new FormatedStringBuilder();
-
-        groupedByType.forEach((type, list) -> {
-            response.append(String.format("%s:", type == TransactionType.EXPENSE ? "Expenses" : "Savings"));
-
-            list.forEach(r -> {
-                response.append(String.format(
-                        "- %s of %.2f (%s) scheduled every %s on %s [Category: %s, Currency: %s]",
-                        r.getBusiness(),
-                        r.getValue(),
-                        type.name(),
-                        r.getPeriod(),
-                        r.getPaymentDay().format(DATE_FORMATTER),
-                        r.getCategory(),
-                        r.getCurrency()
-                ));
-            });
-
-            response.append("");
-        });
-
-        response.append("---");
-        response.append("Recurring Transaction Summary:");
-        response.append(String.format("Total Recurring Expenses: %.2f", totalExpenses));
-        response.append(String.format("Total Recurring Savings: %.2f", totalSavings));
-
-        return response.toString();
-    }
-
-    public String formatRecorrenciaDetailReport(Recorrencia recorrencia, List<Transaction> transactions) {
-        FormatedStringBuilder response = new FormatedStringBuilder();
-
-        response.append("Recurring Transaction Details:");
-        response.append(String.format("- Business: %s", recorrencia.getBusiness()));
-        response.append(String.format("- Value: %.2f %s", recorrencia.getValue(), recorrencia.getCurrency()));
-        response.append(String.format("- Type: %s", recorrencia.getType()));
-        response.append(String.format("- Category: %s", recorrencia.getCategory()));
-        response.append(String.format("- Payment Day: %s", recorrencia.getPaymentDay().format(DATE_FORMATTER)));
-        response.append(String.format("- Periodicity: %s", recorrencia.getPeriod()));
-        response.append("---");
-
-        if (transactions == null || transactions.isEmpty()) {
-            response.append("No transactions have been generated for this recurrence yet.");
-            return response.toString();
-        }
-
-        BigDecimal total = BigDecimal.ZERO;
-
-        response.append("Generated Transactions:");
-        for (Transaction tx : transactions) {
-            String date = tx.getCreatedAt().toLocalDate().format(DATE_FORMATTER);
-            response.append(String.format("- [%s] %.2f at %s (%s)", date, tx.getValue(), tx.getBusiness(), tx.getCategory()));
-            total = total.add(tx.getValue());
-        }
-
-        response.append("---");
-        response.append(String.format("Total Generated from Recurrence: %.2f", total));
+        // Final Summary Section
+        response.append("");
+        response.append("===== Overall Scheduled Summary =====");
+        response.append(String.format("Total Scheduled Monthly Expenses: %.2f", totalScheduledExpenses));
+        response.append(String.format("Total Scheduled Monthly Income: %.2f", totalScheduledIncome));
+        response.append(String.format("Projected Net: %.2f", totalScheduledIncome.subtract(totalScheduledExpenses)));
 
         return response.toString();
     }

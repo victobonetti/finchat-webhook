@@ -7,6 +7,8 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,12 +49,12 @@ public class Transaction extends PanacheEntityBase {
   private String currency;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true)
-  @JoinColumn(name = "\"recorrenciaId\"", nullable = true)
-  private Recorrencia recorrencia;
-
-  @ManyToOne(fetch = FetchType.LAZY, optional = true)
   @JoinColumn(name = "\"debtId\"", nullable = true)
   private Debt divida;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = true)
+  @JoinColumn(name = "\"recorrenciaId\"", nullable = true)
+  private Recorrencia recorrencia;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "\"userId\"", nullable = false)

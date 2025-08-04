@@ -13,73 +13,73 @@ import java.util.List;
 @ApplicationScoped
 public class DebtFormatter implements Formatter {
 
-    public String formatDebtReport(List<Debt> debts) {
-        FormatedStringBuilder response = new FormatedStringBuilder();
+        /**
+         * Gera um relatório completo para uma lista de dívidas, detalhando cada dívida
+         * e seus pagamentos, seguido por um sumário geral.
+         *
+         * @param debts Uma lista de objetos Debt, onde cada um deve conter sua
+         * própria lista de transações de pagamento.
+         * @return Uma string com o relatório formatado.
+         */
+        public String formatDebtReport(List<Debt> debts) {
+            if (debts == null || debts.isEmpty()) {
+                return "Nenhuma dívida registrada.";
+            }
 
-        if (debts == null || debts.isEmpty()) {
-            return "No debts registered.";
-        }
+            FormatedStringBuilder response = new FormatedStringBuilder();
+            response.append("===== Relatório de Dívidas =====");
 
-        BigDecimal totalDebt = BigDecimal.ZERO;
-        BigDecimal totalPaid = BigDecimal.ZERO;
+            // Processa cada dívida individualmente
+            for (Debt debt : debts) {
+                response.append(""); // Adiciona espaço para separar as seções
+                response.append(String.format(
+                        "[%s] %s: %.2f / %.2f %s",
+                        debt.getSituacao(),
+                        debt.getBusiness(),
+                        debt.getPaidValue(),
+                        debt.getTotalValue(),
+                        debt.getCurrency()
+                ));
+                response.append(String.format(
+                        "  - Categoria: %s | Criada em: %s",
+                        debt.getCategory(),
+                        debt.getCreatedAt().toLocalDate().format(DATE_FORMATTER)
+                ));
 
-        response.append("Debt Summary:");
+                List<Transaction> payments = debt.getTransactions();
+                if (payments.isEmpty()) {
+                    response.append("  -> Nenhum pagamento realizado para esta dívida.");
+                } else {
+                    response.append("  -> Pagamentos Realizados:");
+                    for (Transaction tx : payments) {
+                        response.append(String.format(
+                                "    - [%s] Pagamento de %.2f",
+                                tx.getCreatedAt().toLocalDate().format(DATE_FORMATTER),
+                                tx.getValue()
+                        ));
+                    }
+                }
+                response.append("---");
+            }
 
-        for (Debt debt : debts) {
-            response.append(String.format(
-                    "- %s: %.2f/%s %.2f (%s) | %s",
-                    debt.getBusiness(),
-                    debt.getPaidValue(),
-                    debt.getCurrency(),
-                    debt.getTotalValue(),
-                    debt.getSituacao(),
-                    debt.getId()
-            ));
-            totalDebt = totalDebt.add(debt.getTotalValue());
-            totalPaid = totalPaid.add(debt.getPaidValue());
-        }
+            // Calcula os totais do sumário geral usando Streams para concisão
+            BigDecimal totalDebt = debts.stream()
+                    .map(Debt::getTotalValue)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        response.append("---");
-        response.append(String.format("Total Debt: %.2f", totalDebt));
-        response.append(String.format("Total Paid: %.2f", totalPaid));
-        response.append(String.format("Remaining: %.2f", totalDebt.subtract(totalPaid)));
+            BigDecimal totalPaid = debts.stream()
+                    .map(Debt::getPaidValue)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return response.toString();
-    }
+            // Seção do Sumário Final
+            response.append("");
+            response.append("===== Sumário Geral =====");
+            response.append(String.format("Valor Total das Dívidas: %.2f", totalDebt));
+            response.append(String.format("Valor Total Pago: %.2f", totalPaid));
+            response.append(String.format("Valor Restante a Pagar: %.2f", totalDebt.subtract(totalPaid)));
 
-    public String formatDebtDetailReport(Debt debt, List<Transaction> transactions) {
-        FormatedStringBuilder response = new FormatedStringBuilder();
-
-        response.append("Debt Detail:");
-        response.append(String.format("- Business: %s", debt.getBusiness()));
-        response.append(String.format("- Total Value: %.2f %s", debt.getTotalValue(), debt.getCurrency()));
-        response.append(String.format("- Paid Value: %.2f", debt.getPaidValue()));
-        response.append(String.format("- Category: %s", debt.getCategory()));
-        response.append(String.format("- Status: %s", debt.getSituacao()));
-        response.append(String.format("- Created At: %s", debt.getCreatedAt().toLocalDate().format(DATE_FORMATTER)));
-        response.append("---");
-
-        if (transactions == null || transactions.isEmpty()) {
-            response.append("No payments have been made for this debt yet.");
             return response.toString();
         }
-
-        BigDecimal paidFromTransactions = BigDecimal.ZERO;
-
-        response.append("Payments:");
-        for (Transaction tx : transactions) {
-            if (tx.getType() == TransactionType.EXPENSE) {  // Consider payments as EXPENSE
-                String date = tx.getCreatedAt().toLocalDate().format(DATE_FORMATTER);
-                response.append(String.format("- [%s] %.2f at %s (%s)", date, tx.getValue(), tx.getBusiness(), tx.getCategory()));
-                paidFromTransactions = paidFromTransactions.add(tx.getValue());
-            }
-        }
-
-        response.append("---");
-        response.append(String.format("Total Paid in Transactions: %.2f", paidFromTransactions));
-        response.append(String.format("Remaining Balance: %.2f", debt.getTotalValue().subtract(paidFromTransactions)));
-
-        return response.toString();
     }
 
-}
+
