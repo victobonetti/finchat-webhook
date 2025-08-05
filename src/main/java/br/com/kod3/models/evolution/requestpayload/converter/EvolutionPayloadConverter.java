@@ -111,8 +111,8 @@ public class EvolutionPayloadConverter {
             .period(PeriodEnum.fromString(periodoStr))
             .date(date)
             .type(type)
-            .idRecorrencia(idRecorrencia.isBlank() ? idRecorrencia : null)
-            .idDebt(idDebt.isBlank() ? idDebt : null)
+            .idRecorrencia(!idRecorrencia.isBlank() ? idRecorrencia : null)
+            .idDebt(!idDebt.isBlank() ? idDebt : null)
             .build();
   }
 

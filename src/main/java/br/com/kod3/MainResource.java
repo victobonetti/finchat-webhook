@@ -21,7 +21,6 @@ import io.quarkus.logging.Log;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -61,7 +60,7 @@ public class MainResource {
   @Path("webhook")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response webhook(@Valid WebhookBodyDto body) {
+  public Response webhook(WebhookBodyDto body) {
 
     final EvolutionMessageSender evo = new EvolutionMessageSender(
             evolutionApiService,
