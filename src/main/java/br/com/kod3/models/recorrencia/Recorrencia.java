@@ -35,31 +35,31 @@ public class Recorrencia extends PanacheEntityBase {
   @Column(name = "id")
   private String id;
 
-  @Column(name = "business")
+  @Column(name = "business", nullable = false)
   private String business;
 
-  @Column(name = "value")
+  @Column(name = "value", nullable = false)
   private BigDecimal value;
 
-  @Column(name = "category")
+  @Column(name = "category", nullable = false)
   private Category category;
 
   @Column(name = "currency")
   private String currency;
 
-  @Column(name = "payment_day")
+  @Column(name = "payment_day", nullable = false)
   private LocalDate paymentDay;
 
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "period", columnDefinition = "public.\"periodenum\"")
+  @Column(name = "period", columnDefinition = "public.\"periodenum\"", nullable = false)
   private PeriodEnum period;
 
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "type", columnDefinition = "public.\"transactiontype\"")
+  @Column(name = "type", columnDefinition = "public.\"transactiontype\"", nullable = false)
   private TransactionType type;
 
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "situacao", columnDefinition = "public.\"situacaoenum\"")
+  @Column(name = "situacao", columnDefinition = "public.\"situacaoenum\"", nullable = false)
   private SituacaoEnum situacao;
 
   @Column(name = "dayOfMonth")
@@ -74,8 +74,6 @@ public class Recorrencia extends PanacheEntityBase {
 
   @OneToMany(
           mappedBy = "recorrencia",
-          cascade = CascadeType.ALL,
-          orphanRemoval = true,
           fetch = FetchType.LAZY)
   @Getter
   private List<Transaction> transactions;

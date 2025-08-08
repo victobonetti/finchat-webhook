@@ -48,7 +48,7 @@ public class Debt extends PanacheEntityBase {
   private String currency;
 
   @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "situacao", columnDefinition = "public.\"situacaoenum\"")
+  @Column(name = "situacao", columnDefinition = "public.\"situacaoenum\"", nullable = false)
   private SituacaoEnum situacao;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -57,8 +57,6 @@ public class Debt extends PanacheEntityBase {
 
   @OneToMany(
           mappedBy = "divida",
-          cascade = CascadeType.ALL,
-          orphanRemoval = true,
           fetch = FetchType.LAZY)
   @Getter
   private List<Transaction> transactions;
