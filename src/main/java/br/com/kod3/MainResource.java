@@ -5,7 +5,6 @@ import static br.com.kod3.services.Messages.*;
 
 import br.com.kod3.models.divida.Debt;
 import br.com.kod3.models.divida.DebtConverter;
-import br.com.kod3.models.evolution.list.EvolutionListFactory;
 import br.com.kod3.models.evolution.requestpayload.MessageType;
 import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
@@ -14,9 +13,16 @@ import br.com.kod3.models.recorrencia.Recorrencia;
 import br.com.kod3.models.recorrencia.RecorrenciaConverter;
 import br.com.kod3.models.transaction.TransactionConverter;
 import br.com.kod3.models.transaction.TransactionType;
-import br.com.kod3.models.user.PerfilInvestidorType;
 import br.com.kod3.models.user.User;
-import br.com.kod3.services.*;
+import br.com.kod3.services.CodigosDeResposta;
+import br.com.kod3.services.DebtService;
+import br.com.kod3.services.EvolutionApiService;
+import br.com.kod3.services.EvolutionMessageSender;
+import br.com.kod3.services.RecorrenciaService;
+import br.com.kod3.services.ResponseHandler;
+import br.com.kod3.services.StreakService;
+import br.com.kod3.services.TransactionService;
+import br.com.kod3.services.UserService;
 import io.quarkus.logging.Log;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
 import jakarta.inject.Inject;
@@ -51,7 +57,7 @@ public class MainResource {
 
   @POST
   @Path("batch")
-  public Response batch (){
+  public Response batch(){
     batch.generateRecorrentTransactions();
     return Response.ok().build();
   }
@@ -78,14 +84,8 @@ public class MainResource {
       }
 
       final User user = userOptional.get();
-
       converted.setUserId(user.getId());
-
-      if (isInvestorProfilePending(user)) {
-        return handleInvestorProfilePending(user, converted, evo);
-      } else {
-        return handleRegisteredUser(user, converted, evo);
-      }
+      return handleRegisteredUser(user, converted, evo);
     } catch(Exception e) {
         Log.info(erro_interno);
         Log.error(e);
@@ -108,38 +108,6 @@ public class MainResource {
   private Response handleNewUser(MessageType type, EvolutionMessageSender evo) {
     evo.send(usuario_sem_registro);
     return res.send(SOLICITA_CADASTRO, type);
-  }
-
-  private Response handleInvestorProfilePending(
-      User user, ConvertedDto converted, EvolutionMessageSender evo) {
-    final MessageType type = converted.getType();
-
-    if (Objects.isNull(user.getPerfilInvestidor())) {
-      userService.atualizaPerfilInvestidor(user, PerfilInvestidorType.CADASTRO_PENDENTE);
-      evo.send(solicita_perfil_investidor);
-      evo.opts(EvolutionListFactory.getPerfilInvestidorList(user.getTelefone()));
-      return res.send(INSERE_PENDENCIA_E_SOLICITA_PERFIL, type);
-    }
-
-    final boolean isListResponse = type.equals(MessageType.listResponseMessage);
-    if (!isListResponse) {
-      evo.opts(EvolutionListFactory.getPerfilInvestidorList(user.getTelefone()));
-      return res.send(CodigosDeResposta.SOLICITA_PERFIL, type);
-    }
-
-    final String profileData = converted.getData().toUpperCase();
-
-    for (var p : PerfilInvestidorType.getValidPerfisList()) {
-      if (profileData.contains(p)) {
-        userService.atualizaPerfilInvestidor(user, PerfilInvestidorType.fromDescricao(p));
-        evo.send(acesso_total_sistema);
-        return res.send(CONFIRMA_PERFIL, type);
-      }
-    }
-
-    evo.send(perfil_investidor_invalido);
-    evo.opts(EvolutionListFactory.getPerfilInvestidorList(user.getTelefone()));
-    return res.send(CodigosDeResposta.PERFIL_INVESTIDOR_INVALIDO, type);
   }
 
   private Response handleRegisteredUser(
@@ -267,10 +235,5 @@ public class MainResource {
     } else {
       evo.send("Sua ofensiva está em " + streak + " dias. Continue assim! \uFE0F\u200D\uD83D\uDD25\uD83D\uDC2F");
     }
-  }
-
-  private boolean isInvestorProfilePending(User user) {
-    return Objects.isNull(user.getPerfilInvestidor())
-        || user.getPerfilInvestidor().equals(PerfilInvestidorType.CADASTRO_PENDENTE);
   }
 }

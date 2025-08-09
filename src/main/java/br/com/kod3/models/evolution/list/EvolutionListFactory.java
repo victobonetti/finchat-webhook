@@ -13,38 +13,6 @@ public class EvolutionListFactory {
 
   private EvolutionListFactory() {}
 
-  public static EvolutionListDto getPerfilInvestidorList(String phone) {
-    return EvolutionListDto.builder()
-        .number(phone)
-        .title(titulo_perfil_investidor)
-        .description(descricao_perfil_investidor)
-        .buttonText(botao_perfil_investidor)
-        .footerText(rodape_perfil_investidor)
-        .sections(
-            List.of(
-                EvolutionListDto.Section.builder()
-                    .title("Perfis disponíveis")
-                    .rows(
-                        List.of(
-                            EvolutionListDto.Row.builder()
-                                .rowId("a")
-                                .title(perfil_conservador_titulo)
-                                .description(perfil_conservador_descricao)
-                                .build(),
-                            EvolutionListDto.Row.builder()
-                                .rowId("b")
-                                .title(perfil_moderado_titulo)
-                                .description(perfil_moderado_descricao)
-                                .build(),
-                            EvolutionListDto.Row.builder()
-                                .rowId("c")
-                                .title(perfil_arrojado_titulo)
-                                .description(perfil_arrojado_descricao)
-                                .build()))
-                    .build()))
-        .build();
-  }
-
   public static EvolutionListDto getTransactionRegistryPoolFromRecorrencia(Recorrencia r) {
 
     DecimalFormat df = new DecimalFormat("0.00");

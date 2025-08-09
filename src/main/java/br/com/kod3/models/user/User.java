@@ -31,15 +31,8 @@ public class User extends PanacheEntityBase {
   @Column(name = "\"monthlyIncome\"")
   private Integer monthlyIncome;
 
-  @Column(name = "\"emailVerified\"")
-  private Boolean emailVerified;
-
   @Column(name = "image")
   private String image;
-
-  @Enumerated(EnumType.STRING)
-  @Column(name = "\"perfilInvestidor\"", columnDefinition = "\"PerfilInvestidorType\"")
-  private PerfilInvestidorType perfilInvestidor;
 
   @CreationTimestamp
   @Column(name = "\"createdAt\"")

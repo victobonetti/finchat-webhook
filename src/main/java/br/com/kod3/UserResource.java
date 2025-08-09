@@ -2,7 +2,6 @@ package br.com.kod3;
 
 import br.com.kod3.models.evolution.list.EvolutionListFactory;
 import br.com.kod3.models.streak.StreakResponseDto;
-import br.com.kod3.models.user.PerfilInvestidorType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.models.user.UserDataDto;
 import br.com.kod3.services.*;
@@ -16,8 +15,6 @@ import jakarta.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
-
-import static br.com.kod3.services.Messages.solicita_perfil_investidor;
 
 @Path("v1/user")
 public class UserResource {
@@ -68,23 +65,4 @@ public class UserResource {
         return Response.ok(detailingService.getFormattedDebts(uid)).build();
     }
 
-    @POST
-    @Path("/{uid}/ask-investor-profile")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response askInvestorProfile(@Valid UserDataDto body) {
-
-        final String phone = body.telefone();
-        final Optional<User> userOptional = userService.findByPhone(phone);
-
-        if (userOptional.isPresent()) {
-            final EvolutionMessageSender evo = new EvolutionMessageSender(evolutionApiService, phone);
-            userService.atualizaPerfilInvestidor(
-                    userOptional.get(), PerfilInvestidorType.CADASTRO_PENDENTE);
-            evo.send(solicita_perfil_investidor);
-            evo.opts(EvolutionListFactory.getPerfilInvestidorList(body.telefone()));
-        }
-
-        return Response.ok().build();
-    }
 }
