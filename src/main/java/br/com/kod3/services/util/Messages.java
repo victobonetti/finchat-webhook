@@ -32,6 +32,10 @@ public final class Messages {
 
   public static final String confirma_transacao = "confirmar";
 
+  public static final String valor_excede_divida = "Oops! O valor que você quer pagar excede o valor da dívida! Refaça a operação.";
+
+  public static final String debito_quitado = "Sua dívida foi quitada! Parabéns.";
+
   public static final String confirma_transacao_descricao = "✅ confirmar essa transação (registrar)";
 
   public static final String cancela_transacao_descricao = "❌ cancelar essa transação (não registrar)";

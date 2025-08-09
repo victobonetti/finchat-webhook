@@ -62,4 +62,6 @@ public class Debt extends PanacheEntityBase {
   @UpdateTimestamp
   @Column(name = "\"updatedAt\"")
   private LocalDateTime updatedAt;
+
+
 }

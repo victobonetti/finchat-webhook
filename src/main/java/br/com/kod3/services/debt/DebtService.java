@@ -5,6 +5,7 @@ import br.com.kod3.models.divida.DebtConverter;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.user.User;
+import br.com.kod3.models.util.SituacaoEnum;
 import br.com.kod3.repositories.debt.DebtRepository;
 import br.com.kod3.repositories.transaction.TransactionRepository;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
@@ -63,5 +64,9 @@ public class DebtService {
 
     public BigDecimal getPaidValue(String debtId, String uid) {
         return transactionService.getPaidValueFromDebt(debtId, uid);
+    }
+
+    public void baixar(String idDebt) {
+        repository.update("set situacao = ?1 where id = ?2", SituacaoEnum.INATIVO, idDebt);
     }
 }

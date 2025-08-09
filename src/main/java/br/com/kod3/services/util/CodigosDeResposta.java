@@ -10,7 +10,8 @@ public enum CodigosDeResposta {
   CANCELA_TRANSACAO(6),
   ENVIA_PROMPT(7),
   CASO_DESCONHECIDO(8),
-  ERRO_INTERNO(10);
+  ERRO_INTERNO(10),
+  ERRO_VALOR_EXCEDE_DIVIDA(11);
 
   final Integer codigo;
 

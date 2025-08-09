@@ -69,9 +69,24 @@ public class TransactionService {
     if (data.contains(confirma_transacao)) {
 
       final var idRecorrencia = converted.getTransactionPayloadDto().getIdRecorrencia();
+      final var idDebt = converted.getTransactionPayloadDto().getIdDebt();
 
       Debt debt = null;
       Recorrencia recorrencia = null;
+
+      if (idDebt != null) {
+        debt = debtService.getDebtById(idDebt);
+
+        if (debt.getTotalValue().floatValue() < converted.getTransactionPayloadDto().getValue().floatValue() + debtService.getPaidValue(debt.getId(), user.getId()).floatValue()) {
+          evo.send(valor_excede_divida);
+          return ERRO_VALOR_EXCEDE_DIVIDA;
+        }
+
+        if (debt.getTotalValue().floatValue() == converted.getTransactionPayloadDto().getValue().floatValue() + debtService.getPaidValue(debt.getId(), user.getId()).floatValue()){
+          evo.send(debito_quitado);
+          debtService.baixar(idDebt);
+        }
+      }
 
       if (idRecorrencia != null) {
         recorrencia = recorrenciaService.getById(idRecorrencia);
