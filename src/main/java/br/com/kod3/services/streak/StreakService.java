@@ -16,12 +16,16 @@ import java.util.Objects;
 
 @ApplicationScoped
 public class StreakService {
-    @Inject
-    TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
     private HashMap<String, Integer> userStreakMap = new HashMap<>();
 
-    public Integer getStreakFromUserId(String userId){
+    @Inject
+    public StreakService(TransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
+    }
+
+    public Integer getStreakFromUserId(String userId) {
         Objects.requireNonNull(userId);
 
         Integer streak;
@@ -51,7 +55,7 @@ public class StreakService {
         return count > 0;
     }
 
-    @Scheduled(cron="59 59 23 * * ?")
+    @Scheduled(cron = "59 59 23 * * ?")
     @CacheInvalidateAll(cacheName = "has-transaction-today")
     void cleanCache() {
         this.userStreakMap = new HashMap<>();
@@ -59,7 +63,7 @@ public class StreakService {
 
     public void handleStreak(User user, EvolutionMessageSender evo) {
         var streak = getStreakFromUserId(user.getId());
-        if (streak == 1){
+        if (streak == 1) {
             evo.send("Sua ofensiva começou! Continue assim! \uFE0F\u200D\uD83D\uDD25\uD83D\uDC2F");
         } else {
             evo.send("Sua ofensiva está em " + streak + " dias. Continue assim! \uFE0F\u200D\uD83D\uDD25\uD83D\uDC2F");

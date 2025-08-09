@@ -22,11 +22,15 @@ import static br.com.kod3.services.util.Messages.*;
 
 @ApplicationScoped
 public class DebtService {
-    @Inject
-    DebtRepository repository;
+
+    private final DebtRepository repository;
+    private final TransactionService transactionService;
 
     @Inject
-    TransactionService transactionService;
+    public DebtService(DebtRepository repository, TransactionService transactionService) {
+        this.repository = repository;
+        this.transactionService = transactionService;
+    }
 
     private void createOne(Debt entity) {
         repository.persist(entity);

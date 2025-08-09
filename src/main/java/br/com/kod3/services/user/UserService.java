@@ -4,13 +4,19 @@ import br.com.kod3.models.user.User;
 import br.com.kod3.repositories.user.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import java.util.Optional;
 
 @ApplicationScoped
 public class UserService {
-  @Inject UserRepository userRepository;
+    private final UserRepository userRepository;
 
-  public Optional<User> findByPhone(String phone) {
-    return userRepository.find("telefone", phone).stream().findFirst();
-  }
+    @Inject
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public Optional<User> findByPhone(String phone) {
+        return userRepository.find("telefone", phone).stream().findFirst();
+    }
 }

@@ -18,23 +18,29 @@ import java.util.*;
 @ApplicationScoped
 public class DetailingService {
 
-    @Inject
-    TransactionService transactionService;
+    private final TransactionService transactionService;
+    private final RecurrenceService recurrenceService;
+    private final DebtService debtService;
+    private final TransactionsFormatter tf;
+    private final RecurrenceFormatter rf;
+    private final DebtFormatter df;
 
     @Inject
-    RecurrenceService recurrenceService;
-
-    @Inject
-    DebtService debtService;
-
-    @Inject
-    TransactionsFormatter tf;
-
-    @Inject
-    RecurrenceFormatter rf;
-
-    @Inject
-    DebtFormatter df;
+    public DetailingService(
+            TransactionService transactionService,
+            RecurrenceService recurrenceService,
+            DebtService debtService,
+            TransactionsFormatter tf,
+            RecurrenceFormatter rf,
+            DebtFormatter df
+    ) {
+        this.transactionService = transactionService;
+        this.recurrenceService = recurrenceService;
+        this.debtService = debtService;
+        this.tf = tf;
+        this.rf = rf;
+        this.df = df;
+    }
 
     public Detail getFormattedTransactions(String uid, LocalDate startDate, LocalDate endDate) {
         List<Transaction> userTransactions = transactionService.getTransactionsByUidAndPeriod(uid, startDate, endDate);

@@ -14,10 +14,15 @@ import java.util.Objects;
 
 @Path("v1/user")
 public class UserResource {
+
+    private final DetailingService detailingService;
+    private final StreakService streakService;
+
     @Inject
-    DetailingService detailingService;
-    @Inject
-    StreakService streakService;
+    public UserResource(DetailingService detailingService, StreakService streakService) {
+        this.detailingService = detailingService;
+        this.streakService = streakService;
+    }
 
     @GET
     @Path("/{uid}/streak")

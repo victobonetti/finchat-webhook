@@ -5,7 +5,6 @@ import br.com.kod3.models.recurrence.Recurrence;
 import br.com.kod3.repositories.recurrence.RecurrenceRepository;
 import br.com.kod3.services.evolution.EvolutionApiService;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
-import br.com.kod3.services.transaction.TransactionService;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -18,11 +17,14 @@ import static br.com.kod3.services.util.Messages.conferencia_registro_recorrente
 @ApplicationScoped
 public class Batch {
 
-    @Inject
-    RecurrenceRepository repository;
+    private final RecurrenceRepository repository;
+    private final EvolutionApiService evolutionApiService;
 
     @Inject
-    EvolutionApiService evolutionApiService;
+    public Batch(RecurrenceRepository repository, EvolutionApiService evolutionApiService) {
+        this.repository = repository;
+        this.evolutionApiService = evolutionApiService;
+    }
 
     @Scheduled(cron = "0 0 11 * * ?") // Executa td dia às 11h da manhã
     @Transactional

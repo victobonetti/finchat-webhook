@@ -23,11 +23,14 @@ import static br.com.kod3.services.util.Messages.erro_validacao_resposta_transac
 
 @ApplicationScoped
 public class RecurrenceService {
-    @Inject
-    RecurrenceRepository repository;
+    private final RecurrenceRepository repository;
+    private final TransactionRepository transactionRepository;
 
     @Inject
-    TransactionRepository transactionRepository;
+    public RecurrenceService(RecurrenceRepository repository, TransactionRepository transactionRepository) {
+        this.repository = repository;
+        this.transactionRepository = transactionRepository;
+    }
 
     private void createOne(Recurrence entity, Boolean createTransaction) {
         repository.persistAndFlush(entity);
