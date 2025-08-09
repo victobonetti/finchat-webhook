@@ -20,6 +20,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -59,10 +60,6 @@ public class TransactionService {
     return transactionRepository.find("recorrencia.id = ?1 and user.id = ?2", recorrenciaId, uid).list();
   }
 
-  public List<Transaction> getTransactionsFromDebt(String debtId, String uid){
-    return transactionRepository.find("debt.id = ?1 and user.id = ?2", debtId, uid).list();
-  }
-
   @Transactional
   public CodigosDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo){
     Objects.requireNonNull(converted.getTransactionPayloadDto());
@@ -71,16 +68,10 @@ public class TransactionService {
 
     if (data.contains(confirma_transacao)) {
 
-      final var idDebt = converted.getTransactionPayloadDto().getIdDebt();
       final var idRecorrencia = converted.getTransactionPayloadDto().getIdRecorrencia();
 
       Debt debt = null;
       Recorrencia recorrencia = null;
-
-      if (idDebt != null) {
-        debt = debtService.getDebtById(idDebt);
-        debtService.updateDebit(debt, converted.getTransactionPayloadDto());
-      }
 
       if (idRecorrencia != null) {
         recorrencia = recorrenciaService.getById(idRecorrencia);
@@ -107,4 +98,7 @@ public class TransactionService {
     return ERRO_INTERNO;
   }
 
+  public BigDecimal getPaidValueFromDebt(String debtId, String uid) {
+    return transactionRepository.getPaidValueFromDebt(debtId, uid);
+  }
 }

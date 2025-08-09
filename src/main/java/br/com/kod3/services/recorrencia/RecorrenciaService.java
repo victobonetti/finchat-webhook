@@ -29,11 +29,11 @@ public class RecorrenciaService {
     @Inject
     TransactionRepository transactionRepository;
 
-    @Transactional
-    public void createOne(Recorrencia entity, Boolean createTransaction) {
+    private void createOne(Recorrencia entity, Boolean createTransaction) {
         repository.persistAndFlush(entity);
         if (createTransaction) {
-            transactionRepository.persist(TransactionConverter.fromRecorrencia(entity));
+            var transaction = TransactionConverter.fromRecorrencia(entity);
+            transactionRepository.persist(transaction);
         }
     }
 
@@ -49,6 +49,7 @@ public class RecorrenciaService {
         return repository.findById(recorrenciaId);
     }
 
+    @Transactional
     public CodigosDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo) {
         Objects.requireNonNull(converted.getTransactionPayloadDto());
 

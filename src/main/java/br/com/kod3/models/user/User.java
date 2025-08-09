@@ -31,9 +31,6 @@ public class User extends PanacheEntityBase {
   @Column(name = "\"monthlyIncome\"")
   private Integer monthlyIncome;
 
-  @Column(name = "image")
-  private String image;
-
   @CreationTimestamp
   @Column(name = "\"createdAt\"")
   private LocalDateTime createdAt;

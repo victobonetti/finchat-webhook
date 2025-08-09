@@ -6,7 +6,9 @@ import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.user.User;
 import br.com.kod3.repositories.debt.DebtRepository;
+import br.com.kod3.repositories.transaction.TransactionRepository;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
+import br.com.kod3.services.transaction.TransactionService;
 import br.com.kod3.services.util.CodigosDeResposta;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -24,7 +26,9 @@ public class DebtService {
     @Inject
     DebtRepository repository;
 
-    @Transactional
+    @Inject
+    TransactionService transactionService;
+
     private void createOne(Debt entity) {
         repository.persist(entity);
     }
@@ -37,11 +41,7 @@ public class DebtService {
         return repository.findById(debtId);
     }
 
-    public void updateDebit(Debt debt, TransactionPayloadDto transactionPayloadDto) {
-        var val = debt.getPaidValue().add(transactionPayloadDto.getValue()).longValue();
-        repository.update("set paidValue = ?1 where id = ?2", BigDecimal.valueOf(val), debt.getId());
-    }
-
+    @Transactional
     public CodigosDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo) {
         Objects.requireNonNull(converted.getTransactionPayloadDto());
 
@@ -59,5 +59,9 @@ public class DebtService {
 
         evo.send(erro_validacao_resposta_transacao);
         return ERRO_INTERNO;
+    }
+
+    public BigDecimal getPaidValue(String debtId, String uid) {
+        return transactionService.getPaidValueFromDebt(debtId, uid);
     }
 }

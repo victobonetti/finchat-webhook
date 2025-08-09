@@ -4,6 +4,8 @@ import br.com.kod3.models.divida.Debt;
 import br.com.kod3.models.recorrencia.Recorrencia;
 import br.com.kod3.models.user.User;
 
+import java.util.Objects;
+
 public class TransactionConverter {
   private TransactionConverter() {}
 
@@ -21,11 +23,24 @@ public class TransactionConverter {
   }
 
     public static Transaction fromRecorrencia(Recorrencia recorrencia) {
+
+      TransactionType t = null;
+
+      if (recorrencia.getType().equals(TransactionType.RECORRENT_EXPENSE)) {
+        t = TransactionType.EXPENSE;
+      } else if (recorrencia.getType().equals(TransactionType.RECORRENT_INCOME)){
+        t = TransactionType.INCOME;
+      }
+
+      if (Objects.isNull(t)) {
+        throw new RuntimeException("Tipo inesperado para recorrência.");
+      }
+
       return Transaction.builder()
               .business(recorrencia.getBusiness())
               .value(recorrencia.getValue())
               .category(recorrencia.getCategory())
-              .type(recorrencia.getType())
+              .type(t)
               .currency(recorrencia.getCurrency())
               .user(recorrencia.getUser())
               .build();

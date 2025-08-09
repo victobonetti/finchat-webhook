@@ -19,10 +19,6 @@ public class UserResource {
     @Inject
     DetailingService detailingService;
     @Inject
-    UserService userService;
-    @Inject
-    EvolutionApiService evolutionApiService;
-    @Inject
     StreakService streakService;
 
     @GET

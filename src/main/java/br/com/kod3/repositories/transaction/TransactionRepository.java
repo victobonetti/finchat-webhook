@@ -6,10 +6,12 @@ import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.NoResultException;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 @ApplicationScoped
 public class TransactionRepository implements PanacheRepositoryBase<Transaction, String> {
@@ -62,4 +64,13 @@ public class TransactionRepository implements PanacheRepositoryBase<Transaction,
                 end.atTime(LocalTime.MAX)
         ).list();
     }
+
+    public BigDecimal getPaidValueFromDebt(String debtId, String uid) {
+        return find("\"debtId\" = ?1 and \"user.id\"= ?2 ", debtId, uid)
+                .stream()
+                .map(Transaction::getValue)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 }

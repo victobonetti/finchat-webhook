@@ -31,7 +31,7 @@ import java.util.Optional;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
-@Path("v1")
+@Path("v1/webhook")
 public class MainResource {
 
   @Inject UserService userService;
@@ -57,7 +57,6 @@ public class MainResource {
   }
 
   @POST
-  @Path("webhook")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public Response webhook(WebhookBodyDto body) {
@@ -73,6 +72,7 @@ public class MainResource {
       }
 
       final User user = userOptional.get();
+      converted.setUserId(user.getId());
       return handleRegisteredUser(user, converted, evo);
 
     } catch(Exception e) {

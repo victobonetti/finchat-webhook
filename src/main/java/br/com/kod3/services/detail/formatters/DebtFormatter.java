@@ -2,13 +2,18 @@ package br.com.kod3.services.detail.formatters;
 
 import br.com.kod3.models.divida.Debt;
 import br.com.kod3.models.transaction.Transaction;
+import br.com.kod3.services.debt.DebtService;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @ApplicationScoped
 public class DebtFormatter implements Formatter {
+
+        @Inject
+        DebtService debtService;
 
         /**
          * Gera um relatório completo para uma lista de dívidas, detalhando cada dívida
@@ -33,7 +38,7 @@ public class DebtFormatter implements Formatter {
                         "[%s] %s: %.2f / %.2f %s",
                         debt.getSituacao(),
                         debt.getBusiness(),
-                        debt.getPaidValue(),
+                        debtService.getPaidValue(debt.getId(), debt.getUser().getId()),
                         debt.getTotalValue(),
                         debt.getCurrency()
                 ));
@@ -41,6 +46,11 @@ public class DebtFormatter implements Formatter {
                         "  - Categoria: %s | Criada em: %s",
                         debt.getCategory(),
                         debt.getCreatedAt().toLocalDate().format(DATE_FORMATTER)
+                ));
+
+                response.append(String.format(
+                        "  - id: %s",
+                        debt.getId()
                 ));
 
                 List<Transaction> payments = debt.getTransactions();
@@ -56,25 +66,7 @@ public class DebtFormatter implements Formatter {
                         ));
                     }
                 }
-                response.append("---");
             }
-
-            // Calcula os totais do sumário geral usando Streams para concisão
-            BigDecimal totalDebt = debts.stream()
-                    .map(Debt::getTotalValue)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            BigDecimal totalPaid = debts.stream()
-                    .map(Debt::getPaidValue)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            // Seção do Sumário Final
-            response.append("");
-            response.append("===== Sumário Geral =====");
-            response.append(String.format("Valor Total das Dívidas: %.2f", totalDebt));
-            response.append(String.format("Valor Total Pago: %.2f", totalPaid));
-            response.append(String.format("Valor Restante a Pagar: %.2f", totalDebt.subtract(totalPaid)));
-
             return response.toString();
         }
     }

@@ -7,11 +7,9 @@ import br.com.kod3.models.user.User;
 import br.com.kod3.models.util.SituacaoEnum;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.*;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
@@ -33,10 +31,6 @@ public class Debt extends PanacheEntityBase {
 
   @Column(name = "business")
   private String business;
-
-  @Column(name = "paidValue")
-  @Setter
-  private BigDecimal paidValue;
 
   @Column(name = "totalValue")
   private BigDecimal totalValue;
