@@ -1,12 +1,15 @@
-package br.com.kod3.services;
+package br.com.kod3.services.detail;
 
 import br.com.kod3.models.divida.Debt;
 import br.com.kod3.models.recorrencia.Recorrencia;
 import br.com.kod3.models.transaction.Transaction;
 import br.com.kod3.models.util.Detail;
-import br.com.kod3.services.formatters.DebtFormatter;
-import br.com.kod3.services.formatters.RecorrenciaFormatter;
-import br.com.kod3.services.formatters.TransactionsFormatter;
+import br.com.kod3.services.recorrencia.RecorrenciaService;
+import br.com.kod3.services.debt.DebtService;
+import br.com.kod3.services.detail.formatters.DebtFormatter;
+import br.com.kod3.services.detail.formatters.RecorrenciaFormatter;
+import br.com.kod3.services.detail.formatters.TransactionsFormatter;
+import br.com.kod3.services.transaction.TransactionService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.time.LocalDate;

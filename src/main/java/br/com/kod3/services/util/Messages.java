@@ -1,4 +1,4 @@
-package br.com.kod3.services;
+package br.com.kod3.services.util;
 
 public final class Messages {
 
@@ -38,9 +38,9 @@ public final class Messages {
 
   public static final String divida_criada = "Dívida criada ✅";
 
-  public static final String gasto_recorrente_criado = "Gasto recorrente criado ✅";
+  public static final String gasto_recorrente_criado = "Gasto recorrente criado ✅\nUm registro de gasto foi feito para o dia atual.";
 
-  public static final String receita_recorrente_criada = "Receita recorrente criada ✅";
+  public static final String receita_recorrente_criada = "Receita recorrente criada ✅\nUm registro de entrada foi feito para o dia atual.";
 
   public static final String cancela_transacao = "cancelar";
 

@@ -1,7 +1,7 @@
-package br.com.kod3.services;
+package br.com.kod3.services.user;
 
 import br.com.kod3.models.user.User;
-import br.com.kod3.repositories.UserRepository;
+import br.com.kod3.repositories.user.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.Optional;

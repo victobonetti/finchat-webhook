@@ -1,4 +1,4 @@
-package br.com.kod3.repositories;
+package br.com.kod3.repositories.transaction;
 
 import br.com.kod3.models.transaction.Transaction;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
@@ -9,7 +9,6 @@ import jakarta.persistence.NoResultException;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @ApplicationScoped

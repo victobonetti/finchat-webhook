@@ -1,20 +1,18 @@
-package br.com.kod3;
+package br.com.kod3.resources;
 
-import br.com.kod3.models.evolution.list.EvolutionListFactory;
 import br.com.kod3.models.streak.StreakResponseDto;
-import br.com.kod3.models.user.User;
-import br.com.kod3.models.user.UserDataDto;
-import br.com.kod3.services.*;
+import br.com.kod3.services.detail.DetailingService;
+import br.com.kod3.services.evolution.EvolutionApiService;
+import br.com.kod3.services.streak.StreakService;
+import br.com.kod3.services.user.UserService;
 import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.Optional;
 
 @Path("v1/user")
 public class UserResource {

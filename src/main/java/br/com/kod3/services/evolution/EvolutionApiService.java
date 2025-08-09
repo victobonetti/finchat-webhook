@@ -1,4 +1,4 @@
-package br.com.kod3.services;
+package br.com.kod3.services.evolution;
 
 import br.com.kod3.clients.EvolutionApiClient;
 import br.com.kod3.models.evolution.list.EvolutionListDto;

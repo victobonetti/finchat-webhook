@@ -1,4 +1,4 @@
-package br.com.kod3.repositories;
+package br.com.kod3.repositories.recorrencia;
 
 import br.com.kod3.models.recorrencia.PeriodEnum;
 import br.com.kod3.models.recorrencia.Recorrencia;
@@ -7,7 +7,6 @@ import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped

@@ -1,4 +1,4 @@
-package br.com.kod3;
+package br.com.kod3.resources;
 
 import br.com.kod3.clients.N8nApiClient;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;

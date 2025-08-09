@@ -1,4 +1,4 @@
-package br.com.kod3.services;
+package br.com.kod3.services.util;
 
 import static jakarta.ws.rs.core.Response.Status.OK;
 

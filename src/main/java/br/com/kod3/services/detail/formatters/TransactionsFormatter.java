@@ -1,4 +1,4 @@
-package br.com.kod3.services.formatters;
+package br.com.kod3.services.detail.formatters;
 
 import br.com.kod3.models.transaction.Category;
 import br.com.kod3.models.transaction.Transaction;

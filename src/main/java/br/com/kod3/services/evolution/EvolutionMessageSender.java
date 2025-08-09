@@ -1,4 +1,4 @@
-package br.com.kod3.services;
+package br.com.kod3.services.evolution;
 
 import br.com.kod3.models.evolution.list.EvolutionListDto;
 import br.com.kod3.models.evolution.requestpayload.EvolutionReactionDto;
@@ -25,4 +25,5 @@ public class EvolutionMessageSender {
     var dto = new EvolutionReactionDto(remoteJid, messageId);
     evolutionApiService.sendReaction(dto);
   }
+
 }

@@ -1,4 +1,4 @@
-package br.com.kod3.services.formatters;
+package br.com.kod3.services.detail.formatters;
 
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;

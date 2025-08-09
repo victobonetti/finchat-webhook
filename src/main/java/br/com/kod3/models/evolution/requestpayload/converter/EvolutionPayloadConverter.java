@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import static br.com.kod3.services.Messages.*;
+import static br.com.kod3.services.util.Messages.*;
 
 @ApplicationScoped
 public class EvolutionPayloadConverter {

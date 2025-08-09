@@ -1,13 +1,10 @@
-package br.com.kod3.services.formatters;
+package br.com.kod3.services.detail.formatters;
 
 import br.com.kod3.models.divida.Debt;
 import br.com.kod3.models.transaction.Transaction;
-import br.com.kod3.models.transaction.TransactionType;
-import br.com.kod3.models.util.SituacaoEnum;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @ApplicationScoped

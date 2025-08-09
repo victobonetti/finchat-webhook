@@ -1,4 +1,4 @@
-package br.com.kod3.services.formatters;
+package br.com.kod3.services.detail.formatters;
 
 import br.com.kod3.models.recorrencia.Recorrencia;
 import br.com.kod3.models.transaction.Transaction;
@@ -8,9 +8,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class RecorrenciaFormatter implements Formatter {
