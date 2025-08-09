@@ -1,9 +1,7 @@
-package br.com.kod3.models.divida;
+package br.com.kod3.models.debt;
 
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.user.User;
-
-import java.math.BigDecimal;
 
 public class DebtConverter {
     private DebtConverter (){}

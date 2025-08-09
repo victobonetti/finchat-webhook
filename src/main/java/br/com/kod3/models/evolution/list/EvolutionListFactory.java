@@ -1,6 +1,6 @@
 package br.com.kod3.models.evolution.list;
 
-import br.com.kod3.models.recorrencia.Recorrencia;
+import br.com.kod3.models.recurrence.Recurrence;
 
 import static br.com.kod3.services.util.Messages.*;
 
@@ -11,7 +11,7 @@ public class EvolutionListFactory {
 
   private EvolutionListFactory() {}
 
-  public static EvolutionListDto getTransactionList(Recorrencia r) {
+  public static EvolutionListDto getTransactionList(Recurrence r) {
 
     var rows = List.of(
             row("a", confirma_transacao),
@@ -37,12 +37,12 @@ public class EvolutionListFactory {
             .build();
   }
 
-  private static EvolutionListDto transactionList(Recorrencia r, List<EvolutionListDto.Row> rows) {
+  private static EvolutionListDto transactionList(Recurrence r, List<EvolutionListDto.Row> rows) {
     DecimalFormat df = new DecimalFormat("0.00");
 
     String title = switch (r.getType()) {
-      case RECORRENT_EXPENSE -> registrar_gasto;
-      case RECORRENT_INCOME -> registrar_receita;
+      case RECURRING_EXPENSE -> registrar_gasto;
+      case RECURRING_INCOME -> registrar_receita;
       default -> throw new RuntimeException("Erro ao gerar recorrência");
     };
 

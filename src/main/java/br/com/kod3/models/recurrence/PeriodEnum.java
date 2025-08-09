@@ -1,4 +1,4 @@
-package br.com.kod3.models.recorrencia;
+package br.com.kod3.models.recurrence;
 
 import java.util.Objects;
 

@@ -1,6 +1,6 @@
 package br.com.kod3.services.detail.formatters;
 
-import br.com.kod3.models.recorrencia.Recorrencia;
+import br.com.kod3.models.recurrence.Recurrence;
 import br.com.kod3.models.transaction.Transaction;
 import br.com.kod3.models.transaction.TransactionType;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @ApplicationScoped
-public class RecorrenciaFormatter implements Formatter {
+public class RecurrenceFormatter implements Formatter {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -18,12 +18,12 @@ public class RecorrenciaFormatter implements Formatter {
      * Generates a comprehensive report for a list of recurrences, detailing each
      * recurrence and its associated transactions, followed by an overall summary.
      *
-     * @param recorrencias A list of Recorrencia objects, where each is expected
+     * @param recurrences A list of Recorrencia objects, where each is expected
      * to contain its own list of associated transactions.
      * @return A formatted string report.
      */
-    public String formatRecorrenciaReport(List<Recorrencia> recorrencias) {
-        if (recorrencias == null || recorrencias.isEmpty()) {
+    public String formatRecurrenceReport(List<Recurrence> recurrences) {
+        if (recurrences == null || recurrences.isEmpty()) {
             return "No recurring transactions to report.";
         }
 
@@ -31,7 +31,7 @@ public class RecorrenciaFormatter implements Formatter {
         response.append("===== Recurring Transactions Report =====");
 
         // Process each recurrence and its own transactions
-        for (Recorrencia rec : recorrencias) {
+        for (Recurrence rec : recurrences) {
             response.append(""); // Add a space before the new section
             response.append(String.format(
                     "[%s] %s: %.2f %s every %s",
@@ -71,14 +71,14 @@ public class RecorrenciaFormatter implements Formatter {
         }
 
         // Calculate overall summary totals based on the scheduled values of recurrences
-        BigDecimal totalScheduledExpenses = recorrencias.stream()
-                .filter(r -> r.getType() == TransactionType.RECORRENT_EXPENSE)
-                .map(Recorrencia::getValue)
+        BigDecimal totalScheduledExpenses = recurrences.stream()
+                .filter(r -> r.getType() == TransactionType.RECURRING_EXPENSE)
+                .map(Recurrence::getValue)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal totalScheduledIncome = recorrencias.stream()
-                .filter(r -> r.getType() == TransactionType.RECORRENT_INCOME)
-                .map(Recorrencia::getValue)
+        BigDecimal totalScheduledIncome = recurrences.stream()
+                .filter(r -> r.getType() == TransactionType.RECURRING_INCOME)
+                .map(Recurrence::getValue)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // Final Summary Section

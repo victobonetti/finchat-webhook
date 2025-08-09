@@ -1,7 +1,7 @@
 package br.com.kod3.models.transaction;
 
-import br.com.kod3.models.divida.Debt;
-import br.com.kod3.models.recorrencia.Recorrencia;
+import br.com.kod3.models.debt.Debt;
+import br.com.kod3.models.recurrence.Recurrence;
 import br.com.kod3.models.user.User;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
@@ -13,17 +13,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.type.SqlTypes;
 
 @Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "\"Transaction\"")
+@Table(name = "CCTB002_TRANSACTION")
 public class Transaction extends PanacheEntityBase {
 
   @Id
@@ -40,8 +38,8 @@ public class Transaction extends PanacheEntityBase {
   @Column(name = "category")
   private Category category;
 
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "type", columnDefinition = "public.\"transactiontype\"")
+  @Enumerated(EnumType.STRING)
+  @Column(name = "type")
   private TransactionType type;
 
   @Column(name = "currency")
@@ -49,11 +47,11 @@ public class Transaction extends PanacheEntityBase {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true)
   @JoinColumn(name = "\"debtId\"", nullable = true)
-  private Debt divida;
+  private Debt debt;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true)
-  @JoinColumn(name = "\"recorrenciaId\"", nullable = true)
-  private Recorrencia recorrencia;
+  @JoinColumn(name = "\"recurrenceId\"", nullable = true)
+  private Recurrence recurrence;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "\"userId\"", nullable = false)

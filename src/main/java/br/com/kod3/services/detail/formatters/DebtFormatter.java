@@ -1,12 +1,11 @@
 package br.com.kod3.services.detail.formatters;
 
-import br.com.kod3.models.divida.Debt;
+import br.com.kod3.models.debt.Debt;
 import br.com.kod3.models.transaction.Transaction;
 import br.com.kod3.services.debt.DebtService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @ApplicationScoped

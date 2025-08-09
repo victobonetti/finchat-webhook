@@ -1,7 +1,7 @@
-package br.com.kod3.repositories.recorrencia;
+package br.com.kod3.repositories.recurrence;
 
-import br.com.kod3.models.recorrencia.PeriodEnum;
-import br.com.kod3.models.recorrencia.Recorrencia;
+import br.com.kod3.models.recurrence.PeriodEnum;
+import br.com.kod3.models.recurrence.Recurrence;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -10,9 +10,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @ApplicationScoped
-public class RecorrenciaRepository implements PanacheRepositoryBase<Recorrencia, String> {
+public class RecurrenceRepository implements PanacheRepositoryBase<Recurrence, String> {
 
-    public List<Recorrencia> findByDiaDoMes() {
+    public List<Recurrence> findByDiaDoMes() {
         int dayOfMonth = LocalDate.now().getDayOfMonth();
         int dayOfWeek = LocalDate.now().getDayOfWeek().getValue();
 

@@ -1,7 +1,7 @@
 package br.com.kod3.models.transaction;
 
-import br.com.kod3.models.divida.Debt;
-import br.com.kod3.models.recorrencia.Recorrencia;
+import br.com.kod3.models.debt.Debt;
+import br.com.kod3.models.recurrence.Recurrence;
 import br.com.kod3.models.user.User;
 
 import java.util.Objects;
@@ -9,26 +9,26 @@ import java.util.Objects;
 public class TransactionConverter {
   private TransactionConverter() {}
 
-  public static Transaction toEntity(TransactionPayloadDto dto, User user, Debt debt, Recorrencia recorrencia) {
+  public static Transaction toEntity(TransactionPayloadDto dto, User user, Debt debt, Recurrence recurrence) {
     return Transaction.builder()
         .business(dto.getBusiness())
         .value(dto.getValue())
         .category(dto.getCategory())
         .type(dto.getType())
         .currency(dto.getCurrency())
-            .divida(debt)
-            .recorrencia(recorrencia)
+            .debt(debt)
+            .recurrence(recurrence)
         .user(user)
         .build();
   }
 
-    public static Transaction fromRecorrencia(Recorrencia recorrencia) {
+    public static Transaction fromRecurrence(Recurrence recurrence) {
 
       TransactionType t = null;
 
-      if (recorrencia.getType().equals(TransactionType.RECORRENT_EXPENSE)) {
+      if (recurrence.getType().equals(TransactionType.RECURRING_EXPENSE)) {
         t = TransactionType.EXPENSE;
-      } else if (recorrencia.getType().equals(TransactionType.RECORRENT_INCOME)){
+      } else if (recurrence.getType().equals(TransactionType.RECURRING_INCOME)){
         t = TransactionType.INCOME;
       }
 
@@ -37,12 +37,12 @@ public class TransactionConverter {
       }
 
       return Transaction.builder()
-              .business(recorrencia.getBusiness())
-              .value(recorrencia.getValue())
-              .category(recorrencia.getCategory())
+              .business(recurrence.getBusiness())
+              .value(recurrence.getValue())
+              .category(recurrence.getCategory())
               .type(t)
-              .currency(recorrencia.getCurrency())
-              .user(recorrencia.getUser())
+              .currency(recurrence.getCurrency())
+              .user(recurrence.getUser())
               .build();
     }
 }

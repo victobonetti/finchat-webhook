@@ -1,12 +1,12 @@
-package br.com.kod3.services.recorrencia;
+package br.com.kod3.services.recurrence;
 
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
-import br.com.kod3.models.recorrencia.Recorrencia;
-import br.com.kod3.models.recorrencia.RecorrenciaConverter;
+import br.com.kod3.models.recurrence.Recurrence;
+import br.com.kod3.models.recurrence.RecurrenceConverter;
 import br.com.kod3.models.transaction.TransactionConverter;
 import br.com.kod3.models.transaction.TransactionType;
 import br.com.kod3.models.user.User;
-import br.com.kod3.repositories.recorrencia.RecorrenciaRepository;
+import br.com.kod3.repositories.recurrence.RecurrenceRepository;
 import br.com.kod3.repositories.transaction.TransactionRepository;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
 import br.com.kod3.services.util.CodigosDeResposta;
@@ -22,31 +22,27 @@ import static br.com.kod3.services.util.Messages.*;
 import static br.com.kod3.services.util.Messages.erro_validacao_resposta_transacao;
 
 @ApplicationScoped
-public class RecorrenciaService {
+public class RecurrenceService {
     @Inject
-    RecorrenciaRepository repository;
+    RecurrenceRepository repository;
 
     @Inject
     TransactionRepository transactionRepository;
 
-    private void createOne(Recorrencia entity, Boolean createTransaction) {
+    private void createOne(Recurrence entity, Boolean createTransaction) {
         repository.persistAndFlush(entity);
         if (createTransaction) {
-            var transaction = TransactionConverter.fromRecorrencia(entity);
+            var transaction = TransactionConverter.fromRecurrence(entity);
             transactionRepository.persist(transaction);
         }
     }
 
-    public List<Recorrencia> getRecorrenciasAtivas(String uid) {
-        return repository.find("user.id = ?1 and situacao = 'ATIVO'", uid).list();
-    }
-
-    public List<Recorrencia> getAllRecorrencias(String uid) {
+    public List<Recurrence> getAllRecurrences(String uid) {
         return repository.find("user.id = ?1", uid).list();
     }
 
-    public Recorrencia getById(String recorrenciaId) {
-        return repository.findById(recorrenciaId);
+    public Recurrence getById(String recurrenceId) {
+        return repository.findById(recurrenceId);
     }
 
     @Transactional
@@ -59,14 +55,14 @@ public class RecorrenciaService {
         }
 
         if (converted.getData().toLowerCase().contains(confirma_transacao)) {
-            createOne(RecorrenciaConverter.toEntity(converted.getTransactionPayloadDto(), user), true);
+            createOne(RecurrenceConverter.toEntity(converted.getTransactionPayloadDto(), user), true);
 
-            if (converted.getTransactionPayloadDto().getType().equals(TransactionType.RECORRENT_INCOME)) {
+            if (converted.getTransactionPayloadDto().getType().equals(TransactionType.RECURRING_INCOME)) {
                 evo.send(receita_recorrente_criada);
                 return CONFIRMA_TRANSACAO;
             }
 
-            if (converted.getTransactionPayloadDto().getType().equals(TransactionType.RECORRENT_EXPENSE)) {
+            if (converted.getTransactionPayloadDto().getType().equals(TransactionType.RECURRING_EXPENSE)) {
                 evo.send(gasto_recorrente_criado);
                 return CONFIRMA_TRANSACAO;
             }

@@ -15,7 +15,7 @@ import br.com.kod3.services.util.CodigosDeResposta;
 import br.com.kod3.services.debt.DebtService;
 import br.com.kod3.services.evolution.EvolutionApiService;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
-import br.com.kod3.services.recorrencia.RecorrenciaService;
+import br.com.kod3.services.recurrence.RecurrenceService;
 import br.com.kod3.services.util.ResponseHandler;
 import br.com.kod3.services.transaction.TransactionService;
 import br.com.kod3.services.user.UserService;
@@ -41,7 +41,8 @@ public class MainResource {
 
   @Inject TransactionService transactionService;
   @Inject DebtService debtService;
-  @Inject RecorrenciaService recorrenciaService;
+  @Inject
+  RecurrenceService recurrenceService;
   @Inject Batch batch;
 
   @Inject
@@ -125,8 +126,8 @@ public class MainResource {
       return transactionService.handle(converted, user, evo);
     } else if (t.equals(TransactionType.DEBT)) {
       return debtService.handle(converted, user, evo);
-    } else if (t.equals(TransactionType.RECORRENT_EXPENSE) || t.equals(TransactionType.RECORRENT_INCOME)) {
-      return recorrenciaService.handle(converted, user, evo);
+    } else if (t.equals(TransactionType.RECURRING_EXPENSE) || t.equals(TransactionType.RECURRING_INCOME)) {
+      return recurrenceService.handle(converted, user, evo);
     }
 
     evo.send(erro_validacao_resposta_transacao);

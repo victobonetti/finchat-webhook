@@ -1,8 +1,8 @@
 package br.com.kod3.batch;
 
 import br.com.kod3.models.evolution.list.EvolutionListFactory;
-import br.com.kod3.models.recorrencia.Recorrencia;
-import br.com.kod3.repositories.recorrencia.RecorrenciaRepository;
+import br.com.kod3.models.recurrence.Recurrence;
+import br.com.kod3.repositories.recurrence.RecurrenceRepository;
 import br.com.kod3.services.evolution.EvolutionApiService;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
 import br.com.kod3.services.transaction.TransactionService;
@@ -19,23 +19,20 @@ import static br.com.kod3.services.util.Messages.conferencia_registro_recorrente
 public class Batch {
 
     @Inject
-    RecorrenciaRepository repository;
-
-    @Inject
-    TransactionService transactionService;
+    RecurrenceRepository repository;
 
     @Inject
     EvolutionApiService evolutionApiService;
 
-    @Scheduled(cron = "0 0 8 * * ?") // Executa todo dia às 8h da manhã
+    @Scheduled(cron = "0 0 11 * * ?") // Executa td dia às 11h da manhã
     @Transactional
     public void generateRecorrentTransactions(){
-        List<Recorrencia> recorrenciasDoDia = repository.findByDiaDoMes();
+        List<Recurrence> recurrencesFromToday = repository.findByDiaDoMes();
 
-        recorrenciasDoDia.forEach(recorrencia -> {
-            var evo = new EvolutionMessageSender(evolutionApiService, recorrencia.getUser().getTelefone());
+        recurrencesFromToday.forEach(r -> {
+            var evo = new EvolutionMessageSender(evolutionApiService, r.getUser().getTelefone());
             evo.send(conferencia_registro_recorrente);
-            evo.opts(EvolutionListFactory.getTransactionList(recorrencia));
+            evo.opts(EvolutionListFactory.getTransactionList(r));
         });
     }
 }

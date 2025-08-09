@@ -1,13 +1,11 @@
 package br.com.kod3.services.debt;
 
-import br.com.kod3.models.divida.Debt;
-import br.com.kod3.models.divida.DebtConverter;
+import br.com.kod3.models.debt.Debt;
+import br.com.kod3.models.debt.DebtConverter;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
-import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.user.User;
 import br.com.kod3.models.util.SituacaoEnum;
 import br.com.kod3.repositories.debt.DebtRepository;
-import br.com.kod3.repositories.transaction.TransactionRepository;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
 import br.com.kod3.services.transaction.TransactionService;
 import br.com.kod3.services.util.CodigosDeResposta;

@@ -36,10 +36,6 @@ public final class Messages {
 
   public static final String debito_quitado = "Sua dívida foi quitada! Parabéns.";
 
-  public static final String confirma_transacao_descricao = "✅ confirmar essa transação (registrar)";
-
-  public static final String cancela_transacao_descricao = "❌ cancelar essa transação (não registrar)";
-
   public static final String divida_criada = "Dívida criada ✅";
 
   public static final String gasto_recorrente_criado = "Gasto recorrente criado ✅\nUm registro de gasto foi feito para o dia atual.";

@@ -2,9 +2,7 @@ package br.com.kod3.resources;
 
 import br.com.kod3.models.streak.StreakResponseDto;
 import br.com.kod3.services.detail.DetailingService;
-import br.com.kod3.services.evolution.EvolutionApiService;
 import br.com.kod3.services.streak.StreakService;
-import br.com.kod3.services.user.UserService;
 import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -24,9 +22,11 @@ public class UserResource {
     @GET
     @Path("/{uid}/streak")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserStreak(@QueryParam("uid") String userId){
-        Log.info("Obtendo streaks para usuario " + userId);
-        return Response.ok().entity(new StreakResponseDto(userId, streakService.getStreakFromUserId(userId))).build();
+    public Response getUserStreak(@PathParam("uid") String userId){
+        Objects.requireNonNull(userId);
+
+        var response = new StreakResponseDto(userId, streakService.getStreakFromUserId(userId));
+        return Response.ok().entity(response).build();
     }
 
     @GET
@@ -44,10 +44,10 @@ public class UserResource {
     @GET
     @Path("{uid}/recurring-transactions")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRecorrenciasFromUser(@PathParam("uid") String uid) {
+    public Response getRecurrencesFromUser(@PathParam("uid") String uid) {
         Objects.requireNonNull(uid);
 
-        return Response.ok(detailingService.getFormattedRecorrencias(uid)).build();
+        return Response.ok(detailingService.getFormattedRecurrences(uid)).build();
     }
 
     @GET

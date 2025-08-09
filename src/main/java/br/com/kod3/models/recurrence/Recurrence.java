@@ -1,4 +1,4 @@
-package br.com.kod3.models.recorrencia;
+package br.com.kod3.models.recurrence;
 
 import br.com.kod3.models.transaction.Category;
 import br.com.kod3.models.transaction.Transaction;
@@ -12,10 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,8 +25,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "\"RECORRENCIA\"")
-public class Recorrencia extends PanacheEntityBase {
+@Table(name = "CCTB004_RECURRENCE")
+public class Recurrence extends PanacheEntityBase {
 
   @Id
   @UuidGenerator
@@ -50,16 +48,16 @@ public class Recorrencia extends PanacheEntityBase {
   @Column(name = "payment_day", nullable = false)
   private LocalDate paymentDay;
 
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "period", columnDefinition = "public.\"periodenum\"", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "period", nullable = false)
   private PeriodEnum period;
 
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "type", columnDefinition = "public.\"transactiontype\"", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "type", nullable = false)
   private TransactionType type;
 
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "situacao", columnDefinition = "public.\"situacaoenum\"", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "situacao", nullable = false)
   private SituacaoEnum situacao;
 
   @Column(name = "dayOfMonth")
@@ -73,7 +71,7 @@ public class Recorrencia extends PanacheEntityBase {
   private User user;
 
   @OneToMany(
-          mappedBy = "recorrencia",
+          mappedBy = "recurrence",
           fetch = FetchType.LAZY)
   @Getter
   private List<Transaction> transactions;

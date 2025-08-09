@@ -1,8 +1,7 @@
-package br.com.kod3.models.divida;
+package br.com.kod3.models.debt;
 
 import br.com.kod3.models.transaction.Category;
 import br.com.kod3.models.transaction.Transaction;
-import br.com.kod3.models.transaction.TransactionType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.models.util.SituacaoEnum;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
@@ -10,7 +9,6 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.*;
-import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "\"DEBT\"")
+@Table(name = "CCTB003_DEBT")
 public class Debt extends PanacheEntityBase {
 
   @Id
@@ -41,8 +39,8 @@ public class Debt extends PanacheEntityBase {
   @Column(name = "currency")
   private String currency;
 
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Column(name = "situacao", columnDefinition = "public.\"situacaoenum\"", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "situacao", nullable = false)
   private SituacaoEnum situacao;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -50,7 +48,7 @@ public class Debt extends PanacheEntityBase {
   private User user;
 
   @OneToMany(
-          mappedBy = "divida",
+          mappedBy = "debt",
           fetch = FetchType.LAZY)
   @Getter
   private List<Transaction> transactions;

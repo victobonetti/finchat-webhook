@@ -2,7 +2,7 @@ package br.com.kod3.models.evolution.requestpayload.converter;
 
 import br.com.kod3.models.evolution.requestpayload.MessageType;
 import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
-import br.com.kod3.models.recorrencia.PeriodEnum;
+import br.com.kod3.models.recurrence.PeriodEnum;
 import br.com.kod3.models.transaction.Category;
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.transaction.TransactionType;
@@ -68,7 +68,7 @@ public class EvolutionPayloadConverter {
     String categoria = "";
     String currencyAndVal = "";
 
-    String idRecorrencia = "";
+    String idRecurrence = "";
     String idDebt = "";
     String periodoStr = "";
 
@@ -91,7 +91,7 @@ public class EvolutionPayloadConverter {
       }
 
       if (q[3].contains("Id da recorrência")) {
-        idRecorrencia = q[3].replace("Id da recorrência: ", "");
+        idRecurrence = q[3].replace("Id da recorrência: ", "");
       }
 
       if (q[3].contains("Id da dívida")) {
@@ -111,7 +111,7 @@ public class EvolutionPayloadConverter {
             .period(PeriodEnum.fromString(periodoStr))
             .date(date)
             .type(type)
-            .idRecorrencia(!idRecorrencia.isBlank() ? idRecorrencia : null)
+            .idRecurrence(!idRecurrence.isBlank() ? idRecurrence : null)
             .idDebt(!idDebt.isBlank() ? idDebt : null)
             .build();
   }
@@ -136,9 +136,9 @@ public class EvolutionPayloadConverter {
     } else if (title.equalsIgnoreCase(registrar_receita)) {
       return TransactionType.INCOME;
     } else if (title.equalsIgnoreCase(registrar_gasto_recorrente)) {
-      return TransactionType.RECORRENT_EXPENSE;
+      return TransactionType.RECURRING_EXPENSE;
     } else if (title.equalsIgnoreCase(registrar_receita_recorrente)) {
-      return TransactionType.RECORRENT_INCOME;
+      return TransactionType.RECURRING_INCOME;
     } else if (title.equalsIgnoreCase(registrar_divida)) {
       return TransactionType.DEBT;
     }

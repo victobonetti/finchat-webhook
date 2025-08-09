@@ -1,13 +1,13 @@
 package br.com.kod3.services.detail;
 
-import br.com.kod3.models.divida.Debt;
-import br.com.kod3.models.recorrencia.Recorrencia;
+import br.com.kod3.models.debt.Debt;
+import br.com.kod3.models.recurrence.Recurrence;
 import br.com.kod3.models.transaction.Transaction;
 import br.com.kod3.models.util.Detail;
-import br.com.kod3.services.recorrencia.RecorrenciaService;
+import br.com.kod3.services.recurrence.RecurrenceService;
 import br.com.kod3.services.debt.DebtService;
 import br.com.kod3.services.detail.formatters.DebtFormatter;
-import br.com.kod3.services.detail.formatters.RecorrenciaFormatter;
+import br.com.kod3.services.detail.formatters.RecurrenceFormatter;
 import br.com.kod3.services.detail.formatters.TransactionsFormatter;
 import br.com.kod3.services.transaction.TransactionService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,16 +22,16 @@ public class DetailingService {
     TransactionService transactionService;
 
     @Inject
-    RecorrenciaService recorrenciaService;
-
-    @Inject
-    TransactionsFormatter tf;
+    RecurrenceService recurrenceService;
 
     @Inject
     DebtService debtService;
 
     @Inject
-    RecorrenciaFormatter rf;
+    TransactionsFormatter tf;
+
+    @Inject
+    RecurrenceFormatter rf;
 
     @Inject
     DebtFormatter df;
@@ -46,14 +46,14 @@ public class DetailingService {
         return new Detail(tf.formatTransactionReport(userTransactions));
     }
 
-    public Detail getFormattedRecorrencias(String uid) {
-        List<Recorrencia> userTransactions = recorrenciaService.getAllRecorrencias(uid);
+    public Detail getFormattedRecurrences(String uid) {
+        List<Recurrence> userTransactions = recurrenceService.getAllRecurrences(uid);
 
         if (userTransactions.isEmpty()) {
             return new Detail("No transactions found for the selected period.");
         }
 
-        return new Detail(rf.formatRecorrenciaReport(userTransactions));
+        return new Detail(rf.formatRecurrenceReport(userTransactions));
     }
 
     public Detail getFormattedDebts(String uid) {

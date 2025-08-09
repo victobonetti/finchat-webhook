@@ -12,7 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "\"user\"")
+@Table(name = "CCTB001_USER")
 public class User extends PanacheEntityBase {
 
   @Id
