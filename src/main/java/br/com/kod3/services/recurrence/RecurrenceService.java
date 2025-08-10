@@ -4,7 +4,7 @@ import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.recurrence.Recurrence;
 import br.com.kod3.models.recurrence.RecurrenceConverter;
 import br.com.kod3.models.transaction.TransactionConverter;
-import br.com.kod3.models.transaction.TransactionType;
+import br.com.kod3.models.util.enums.TransactionType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.repositories.recurrence.RecurrenceRepository;
 import br.com.kod3.repositories.transaction.TransactionRepository;
@@ -41,7 +41,7 @@ public class RecurrenceService {
     }
 
     public List<Recurrence> getAllRecurrences(String uid) {
-        return repository.find("user.id = ?1", uid).list();
+        return repository.find("userId = ?1", uid).list();
     }
 
     public Recurrence getById(String recurrenceId) {

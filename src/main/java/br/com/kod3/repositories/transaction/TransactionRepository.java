@@ -19,9 +19,9 @@ public class TransactionRepository implements PanacheRepositoryBase<Transaction,
     public Integer getUserStreak(String userId) {
         String sql = "WITH " +
                 "  dias_unicos AS ( " +
-                "    SELECT DISTINCT CAST(\"createdAt\" AS DATE) AS dia " +
-                "    FROM \"Transaction\" " +
-                "    WHERE \"userId\" = ?1 " +
+                "    SELECT DISTINCT CAST(createdAt AS DATE) AS dia " +
+                "    FROM CCTB002_TRANSACTION " +
+                "    WHERE userId = ?1 " +
                 "  ), " +
                 "  grupos_de_dias AS ( " +
                 "    SELECT " +
@@ -57,7 +57,7 @@ public class TransactionRepository implements PanacheRepositoryBase<Transaction,
 
     public List<Transaction> findByUserAndDateRange(String userId, LocalDate start, LocalDate end) {
         return find(
-                "user.id = ?1 and createdAt >= ?2 and createdAt <= ?3", // TODO
+                "userId = ?1 and createdAt >= ?2 and createdAt <= ?3", // TODO
                 Sort.by("createdAt").descending(),
                 userId,
                 start.atStartOfDay(),
@@ -66,7 +66,7 @@ public class TransactionRepository implements PanacheRepositoryBase<Transaction,
     }
 
     public BigDecimal getPaidValueFromDebt(String debtId, String uid) {
-        return find("\"debtId\" = ?1 and \"user.id\"= ?2 ", debtId, uid)
+        return find("debtId = ?1 and userId= ?2 ", debtId, uid)
                 .stream()
                 .map(Transaction::getValue)
                 .filter(Objects::nonNull)

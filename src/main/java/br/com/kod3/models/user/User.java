@@ -16,26 +16,26 @@ import org.hibernate.annotations.UpdateTimestamp;
 public class User extends PanacheEntityBase {
 
   @Id
-  @Column(name = "id")
+  @Column(name = "id", nullable = false)
   private String id;
 
-  @Column(name = "name")
+  @Column(name = "name", nullable = false)
   private String name;
 
-  @Column(name = "email")
+  @Column(name = "email", nullable = false)
   private String email;
 
-  @Column(name = "telefone")
+  @Column(name = "telefone", nullable = false)
   private String telefone;
 
-  @Column(name = "\"monthlyIncome\"")
+  @Column(name = "monthlyIncome")
   private Integer monthlyIncome;
 
   @CreationTimestamp
-  @Column(name = "\"createdAt\"")
+  @Column(name = "createdAt", nullable = false)
   private LocalDateTime createdAt;
 
   @UpdateTimestamp
-  @Column(name = "\"updatedAt\"")
+  @Column(name = "updatedAt", nullable = false)
   private LocalDateTime updatedAt;
 }

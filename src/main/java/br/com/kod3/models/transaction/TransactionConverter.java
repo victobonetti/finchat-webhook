@@ -3,6 +3,7 @@ package br.com.kod3.models.transaction;
 import br.com.kod3.models.debt.Debt;
 import br.com.kod3.models.recurrence.Recurrence;
 import br.com.kod3.models.user.User;
+import br.com.kod3.models.util.enums.TransactionType;
 
 import java.util.Objects;
 
@@ -11,7 +12,7 @@ public class TransactionConverter {
 
   public static Transaction toEntity(TransactionPayloadDto dto, User user, Debt debt, Recurrence recurrence) {
     return Transaction.builder()
-        .business(dto.getBusiness())
+        .description(dto.getDescription())
         .value(dto.getValue())
         .category(dto.getCategory())
         .type(dto.getType())
@@ -37,7 +38,7 @@ public class TransactionConverter {
       }
 
       return Transaction.builder()
-              .business(recurrence.getBusiness())
+              .description(recurrence.getDescription())
               .value(recurrence.getValue())
               .category(recurrence.getCategory())
               .type(t)

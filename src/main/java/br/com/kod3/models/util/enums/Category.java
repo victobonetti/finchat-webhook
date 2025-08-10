@@ -1,4 +1,4 @@
-package br.com.kod3.models.transaction;
+package br.com.kod3.models.util.enums;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

@@ -1,10 +1,10 @@
 package br.com.kod3.models.recurrence;
 
-import br.com.kod3.models.transaction.Category;
+import br.com.kod3.models.util.enums.Category;
 import br.com.kod3.models.transaction.Transaction;
-import br.com.kod3.models.transaction.TransactionType;
+import br.com.kod3.models.util.enums.TransactionType;
 import br.com.kod3.models.user.User;
-import br.com.kod3.models.util.SituacaoEnum;
+import br.com.kod3.models.util.enums.SituacaoEnum;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,11 +30,11 @@ public class Recurrence extends PanacheEntityBase {
 
   @Id
   @UuidGenerator
-  @Column(name = "id")
+  @Column(name = "id", nullable = false)
   private String id;
 
-  @Column(name = "business", nullable = false)
-  private String business;
+  @Column(name = "description", nullable = false)
+  private String description;
 
   @Column(name = "value", nullable = false)
   private BigDecimal value;
@@ -52,12 +52,12 @@ public class Recurrence extends PanacheEntityBase {
   @Column(name = "period", nullable = false)
   private PeriodEnum period;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "type", nullable = false)
+  @Column(name = "type")
+  @Convert(converter = TransactionType.TransactionTypeConverter.class)
   private TransactionType type;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "situacao", nullable = false)
+  @Column(name = "situacao")
+  @Convert(converter = SituacaoEnum.SituacaoConverter.class)
   private SituacaoEnum situacao;
 
   @Column(name = "dayOfMonth")
@@ -67,7 +67,7 @@ public class Recurrence extends PanacheEntityBase {
   private Integer dayOfWeek;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "\"userId\"", nullable = false)
+  @JoinColumn(name = "userId", nullable = false)
   private User user;
 
   @OneToMany(
@@ -77,10 +77,10 @@ public class Recurrence extends PanacheEntityBase {
   private List<Transaction> transactions;
 
   @CreationTimestamp
-  @Column(name = "\"createdAt\"")
+  @Column(name = "createdAt")
   private LocalDateTime createdAt;
 
   @UpdateTimestamp
-  @Column(name = "\"updatedAt\"")
+  @Column(name = "updatedAt")
   private LocalDateTime updatedAt;
 }

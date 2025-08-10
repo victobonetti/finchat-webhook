@@ -8,7 +8,7 @@ public class DebtConverter {
 
     public static Debt toEntity(TransactionPayloadDto dto, User user){
         return Debt.builder()
-                .business(dto.getBusiness())
+                .description(dto.getDescription())
                 .totalValue(dto.getValue())
                 .category(dto.getCategory())
                 .currency(dto.getCurrency())

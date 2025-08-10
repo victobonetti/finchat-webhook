@@ -2,7 +2,7 @@ package br.com.kod3.services.detail.formatters;
 
 import br.com.kod3.models.recurrence.Recurrence;
 import br.com.kod3.models.transaction.Transaction;
-import br.com.kod3.models.transaction.TransactionType;
+import br.com.kod3.models.util.enums.TransactionType;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.math.BigDecimal;
@@ -36,7 +36,7 @@ public class RecurrenceFormatter implements Formatter {
             response.append(String.format(
                     "[%s] %s: %.2f %s every %s",
                     rec.getType().name().replace("RECORRENT_", ""), // More concise type name
-                    rec.getBusiness(),
+                    rec.getDescription(),
                     rec.getValue(),
                     rec.getCurrency(),
                     rec.getPeriod()

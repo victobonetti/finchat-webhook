@@ -3,9 +3,9 @@ package br.com.kod3.models.evolution.requestpayload.converter;
 import br.com.kod3.models.evolution.requestpayload.MessageType;
 import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.recurrence.PeriodEnum;
-import br.com.kod3.models.transaction.Category;
+import br.com.kod3.models.util.enums.Category;
 import br.com.kod3.models.transaction.TransactionPayloadDto;
-import br.com.kod3.models.transaction.TransactionType;
+import br.com.kod3.models.util.enums.TransactionType;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -104,7 +104,7 @@ public class EvolutionPayloadConverter {
     final BigDecimal val = new BigDecimal(currencyAndVal.replaceAll("[^\\d.,]+", "")); // Retira caracteres especiais
 
     return TransactionPayloadDto.builder()
-            .business(descricao)
+            .description(descricao)
             .category(Category.fromDescricao(categoria))
             .value(val)
             .currency(currency)

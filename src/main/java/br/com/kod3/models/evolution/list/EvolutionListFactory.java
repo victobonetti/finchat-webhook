@@ -52,7 +52,7 @@ public class EvolutionListFactory {
             Valor: R$ %s
             Id da recorrência: %s
             """.formatted(
-            r.getBusiness(),
+            r.getDescription(),
             r.getCategory(),
             df.format(r.getValue()),
             r.getId()

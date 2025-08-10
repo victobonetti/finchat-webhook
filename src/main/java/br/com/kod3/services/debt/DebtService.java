@@ -4,7 +4,7 @@ import br.com.kod3.models.debt.Debt;
 import br.com.kod3.models.debt.DebtConverter;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.user.User;
-import br.com.kod3.models.util.SituacaoEnum;
+import br.com.kod3.models.util.enums.SituacaoEnum;
 import br.com.kod3.repositories.debt.DebtRepository;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
 import br.com.kod3.services.transaction.TransactionService;
@@ -37,7 +37,7 @@ public class DebtService {
     }
 
     public List<Debt> getDebitsFromUser(String uid) {
-        return repository.find("user.id = ?1", uid).list();
+        return repository.find("userId = ?1", uid).list();
     }
 
     public Debt getDebtById(String debtId) {

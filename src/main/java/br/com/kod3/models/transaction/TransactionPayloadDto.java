@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import br.com.kod3.models.recurrence.PeriodEnum;
+import br.com.kod3.models.util.enums.Category;
+import br.com.kod3.models.util.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TransactionPayloadDto {
   private String userId;
-  private String business;
+  private String description;
   private BigDecimal value;
   private Category category;
   private TransactionType type;

@@ -1,8 +1,8 @@
 package br.com.kod3.services.detail.formatters;
 
-import br.com.kod3.models.transaction.Category;
+import br.com.kod3.models.util.enums.Category;
 import br.com.kod3.models.transaction.Transaction;
-import br.com.kod3.models.transaction.TransactionType;
+import br.com.kod3.models.util.enums.TransactionType;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.math.BigDecimal;
@@ -29,7 +29,7 @@ public class TransactionsFormatter implements Formatter {
             DailySummary dailySummary = groupedByDate.computeIfAbsent(transactionDate, k -> new DailySummary());
 
             Category category = tx.getCategory();
-            String detail = String.format("%.2f in %s (%s)", tx.getValue(), tx.getBusiness(), category);
+            String detail = String.format("%.2f in %s (%s)", tx.getValue(), tx.getDescription(), category);
 
             if (tx.getType() == TransactionType.EXPENSE) {
                 periodTotalSpent = periodTotalSpent.add(tx.getValue());

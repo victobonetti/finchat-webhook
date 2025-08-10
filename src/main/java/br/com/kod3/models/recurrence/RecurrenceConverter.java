@@ -2,7 +2,7 @@ package br.com.kod3.models.recurrence;
 
 import br.com.kod3.models.transaction.TransactionPayloadDto;
 import br.com.kod3.models.user.User;
-import br.com.kod3.models.util.SituacaoEnum;
+import br.com.kod3.models.util.enums.SituacaoEnum;
 
 import java.time.DayOfWeek;
 
@@ -13,7 +13,7 @@ public class RecurrenceConverter {
 
     public static Recurrence toEntity(TransactionPayloadDto dto, User user){
         return Recurrence.builder()
-                .business(dto.getBusiness())
+                .description(dto.getDescription())
                 .value(dto.getValue())
                 .category(dto.getCategory())
                 .type(dto.getType())

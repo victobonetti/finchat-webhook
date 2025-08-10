@@ -9,7 +9,7 @@ import br.com.kod3.models.evolution.requestpayload.MessageType;
 import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.evolution.requestpayload.converter.EvolutionPayloadConverter;
-import br.com.kod3.models.transaction.TransactionType;
+import br.com.kod3.models.util.enums.TransactionType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.services.util.CodigosDeResposta;
 import br.com.kod3.services.debt.DebtService;

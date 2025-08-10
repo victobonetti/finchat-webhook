@@ -40,7 +40,7 @@ public class DebtFormatter implements Formatter {
             response.append(String.format(
                     "[%s] %s: %.2f / %.2f %s",
                     debt.getSituacao(),
-                    debt.getBusiness(),
+                    debt.getDescription(),
                     debtService.getPaidValue(debt.getId(), debt.getUser().getId()),
                     debt.getTotalValue(),
                     debt.getCurrency()

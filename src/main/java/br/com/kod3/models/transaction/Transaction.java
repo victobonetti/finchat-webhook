@@ -3,6 +3,8 @@ package br.com.kod3.models.transaction;
 import br.com.kod3.models.debt.Debt;
 import br.com.kod3.models.recurrence.Recurrence;
 import br.com.kod3.models.user.User;
+import br.com.kod3.models.util.enums.Category;
+import br.com.kod3.models.util.enums.TransactionType;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -26,42 +28,42 @@ public class Transaction extends PanacheEntityBase {
 
   @Id
   @UuidGenerator
-  @Column(name = "id")
+  @Column(name = "id", nullable = false)
   private String id;
 
-  @Column(name = "business")
-  private String business;
+  @Column(name = "description", nullable = false)
+  private String description;
 
-  @Column(name = "value")
+  @Column(name = "value", nullable = false)
   private BigDecimal value;
 
-  @Column(name = "category")
+  @Column(name = "category", nullable = false)
   private Category category;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "type")
+  @Column(name = "type", nullable = false)
+  @Convert(converter = TransactionType.TransactionTypeConverter.class)
   private TransactionType type;
 
-  @Column(name = "currency")
+  @Column(name = "currency", nullable = false)
   private String currency;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true)
-  @JoinColumn(name = "\"debtId\"", nullable = true)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "debtId")
   private Debt debt;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true)
-  @JoinColumn(name = "\"recurrenceId\"", nullable = true)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "recurrenceId")
   private Recurrence recurrence;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "\"userId\"", nullable = false)
+  @JoinColumn(name = "userId", nullable = false)
   private User user;
 
   @CreationTimestamp
-  @Column(name = "\"createdAt\"")
+  @Column(name = "createdAt", nullable = false)
   private LocalDateTime createdAt;
 
   @UpdateTimestamp
-  @Column(name = "\"updatedAt\"")
+  @Column(name = "updatedAt", nullable = false)
   private LocalDateTime updatedAt;
 }
