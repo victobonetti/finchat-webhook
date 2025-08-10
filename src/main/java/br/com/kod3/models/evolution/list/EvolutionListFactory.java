@@ -34,6 +34,7 @@ public class EvolutionListFactory {
     return EvolutionListDto.Row.builder()
             .rowId(id)
             .title(title)
+            .description(title)
             .build();
   }
 

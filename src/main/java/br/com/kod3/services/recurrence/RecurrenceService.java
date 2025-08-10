@@ -41,7 +41,7 @@ public class RecurrenceService {
     }
 
     public List<Recurrence> getAllRecurrences(String uid) {
-        return repository.find("userId = ?1", uid).list();
+        return repository.find("user.id = ?1", uid).list();
     }
 
     public Recurrence getById(String recurrenceId) {

@@ -37,7 +37,7 @@ public class DebtService {
     }
 
     public List<Debt> getDebitsFromUser(String uid) {
-        return repository.find("userId = ?1", uid).list();
+        return repository.find("user.id = ?1", uid).list();
     }
 
     public Debt getDebtById(String debtId) {

@@ -46,7 +46,7 @@ public class StreakService {
         LocalDateTime startOfNextDay = LocalDate.now().plusDays(1).atStartOfDay();
 
         long count = transactionRepository.count(
-                "userId = ?1 and createdAt >= ?2 and createdAt < ?3",
+                "user.id = ?1 and createdAt >= ?2 and createdAt < ?3",
                 userId,
                 startOfDay,
                 startOfNextDay
