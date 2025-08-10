@@ -7,12 +7,10 @@ public final class Messages {
   public static final String usuario_sem_registro =
       """
         🚫 *Usuário não encontrado!*
-
-        Parece que você ainda não tem um registro no nosso sistema.
-        Vamos te ajudar com isso! 😊
-        Você só precisa se cadastrar em:
-
-        https://finchat-app-kappa.vercel.app
+        
+        Ainda estamos em fase de testes. Solicite liberação de acesso no grupo:
+        
+        https://chat.whatsapp.com/CHXCUruElUa2kRaA8jRFfU
         """;
 
   public static final String erro_parse =
