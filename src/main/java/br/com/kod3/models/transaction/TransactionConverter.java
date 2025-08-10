@@ -44,6 +44,7 @@ public class TransactionConverter {
               .type(t)
               .currency(recurrence.getCurrency())
               .user(recurrence.getUser())
+              .recurrence(recurrence)
               .build();
     }
 }
