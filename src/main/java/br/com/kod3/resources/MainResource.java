@@ -1,6 +1,6 @@
 package br.com.kod3.resources;
 
-import static br.com.kod3.services.util.CodigosDeResposta.*;
+import static br.com.kod3.services.util.CodigoDeResposta.*;
 import static br.com.kod3.services.util.Messages.*;
 import static br.com.kod3.services.util.Util.getPhone;
 
@@ -11,11 +11,12 @@ import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.evolution.requestpayload.converter.EvolutionPayloadConverter;
 import br.com.kod3.models.util.enums.TransactionType;
 import br.com.kod3.models.user.User;
-import br.com.kod3.services.util.CodigosDeResposta;
+import br.com.kod3.services.util.CodigoDeResposta;
 import br.com.kod3.services.debt.DebtService;
 import br.com.kod3.services.evolution.EvolutionApiService;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
 import br.com.kod3.services.recurrence.RecurrenceService;
+import br.com.kod3.services.util.FinchatHandler;
 import br.com.kod3.services.util.ResponseHandler;
 import br.com.kod3.services.transaction.TransactionService;
 import br.com.kod3.services.user.UserService;
@@ -92,7 +93,7 @@ public class MainResource {
             }
 
             final User user = userOptional.get();
-            converted.setUserId(user.getId());
+            converted.setUserId(user.getId()); // importante - não remover
             return handleRegisteredUser(user, converted, evo);
 
         } catch (Exception e) {
@@ -131,26 +132,29 @@ public class MainResource {
 
         if (Objects.isNull(converted.getTransactionPayloadDto()) || !type.equals(MessageType.listResponseMessage)) {
             evo.send(erro_validacao_resposta_transacao);
-            return res.send(CodigosDeResposta.CASO_DESCONHECIDO, type);
+            return res.send(CASO_DESCONHECIDO, type);
         }
 
         return res.send(exec(user, converted, evo), type);
     }
 
-    private CodigosDeResposta exec(User user, ConvertedDto converted, EvolutionMessageSender evo) {
+    private CodigoDeResposta exec(User user, ConvertedDto converted, EvolutionMessageSender evo) {
         Objects.requireNonNull(converted.getTransactionPayloadDto());
         var t = converted.getTransactionPayloadDto().getType();
 
-        if (t.equals(TransactionType.INCOME) || t.equals(TransactionType.EXPENSE)) {
-            return transactionService.handle(converted, user, evo);
-        } else if (t.equals(TransactionType.DEBT)) {
-            return debtService.handle(converted, user, evo);
-        } else if (t.equals(TransactionType.RECURRING_EXPENSE) || t.equals(TransactionType.RECURRING_INCOME)) {
-            return recurrenceService.handle(converted, user, evo);
+        FinchatHandler handler = switch (t) {
+            case EXPENSE,INCOME -> transactionService;
+            case RECURRING_EXPENSE,RECURRING_INCOME -> recurrenceService;
+            case DEBT -> debtService;
+        };
+
+        if (Objects.isNull(handler)){
+            evo.send(erro_validacao_resposta_transacao);
+            return ERRO_VALIDACAO_RESPOSTA_TRANSACAO;
         }
 
-        evo.send(erro_validacao_resposta_transacao);
-        return ERRO_VALIDACAO_RESPOSTA_TRANSACAO;
+        return handler.handle(converted, user, evo);
+
     }
 
 }

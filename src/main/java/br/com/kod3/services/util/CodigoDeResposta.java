@@ -3,7 +3,7 @@ package br.com.kod3.services.util;
 import lombok.Getter;
 
 @Getter
-public enum CodigosDeResposta {
+public enum CodigoDeResposta {
   ERRO_VALIDACAO_RESPOSTA_TRANSACAO(0),
   SOLICITA_CADASTRO(1),
   CONFIRMA_TRANSACAO(5),
@@ -15,7 +15,7 @@ public enum CodigosDeResposta {
 
   final Integer codigo;
 
-  CodigosDeResposta(int i) {
+  CodigoDeResposta(int i) {
     this.codigo = i;
   }
 

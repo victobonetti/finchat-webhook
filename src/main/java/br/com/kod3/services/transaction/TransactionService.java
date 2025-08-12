@@ -11,7 +11,8 @@ import br.com.kod3.services.debt.DebtService;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
 import br.com.kod3.services.recurrence.RecurrenceService;
 import br.com.kod3.services.streak.StreakService;
-import br.com.kod3.services.util.CodigosDeResposta;
+import br.com.kod3.services.util.CodigoDeResposta;
+import br.com.kod3.services.util.FinchatHandler;
 import io.quarkus.cache.CacheInvalidate;
 import io.quarkus.cache.CacheKey;
 import io.quarkus.logging.Log;
@@ -23,12 +24,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
-import static br.com.kod3.services.util.CodigosDeResposta.*;
+import static br.com.kod3.services.util.CodigoDeResposta.*;
 import static br.com.kod3.services.util.Messages.*;
 import static br.com.kod3.services.util.Messages.registro_cancelado;
 
 @ApplicationScoped
-public class TransactionService {
+public class TransactionService implements FinchatHandler {
 
     private final DebtService debtService;
     private final StreakService streakService;
@@ -54,7 +55,8 @@ public class TransactionService {
     }
 
     @Transactional
-    public CodigosDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo) {
+    @Override
+    public CodigoDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo) {
         Objects.requireNonNull(converted.getTransactionPayloadDto());
 
         final String data = converted.getData().toLowerCase();

@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class ResponseHandler {
-  public Response send(CodigosDeResposta c, MessageType t) {
+  public Response send(CodigoDeResposta c, MessageType t) {
     return Response.status(OK)
         .header("FC-X-TYPE", t)
         .header("FC-X-CODE", c.codigo.toString())

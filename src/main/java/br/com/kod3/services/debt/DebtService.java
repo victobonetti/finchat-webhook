@@ -8,7 +8,8 @@ import br.com.kod3.models.util.enums.SituacaoEnum;
 import br.com.kod3.repositories.debt.DebtRepository;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
 import br.com.kod3.services.transaction.TransactionService;
-import br.com.kod3.services.util.CodigosDeResposta;
+import br.com.kod3.services.util.CodigoDeResposta;
+import br.com.kod3.services.util.FinchatHandler;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -17,11 +18,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import static br.com.kod3.services.util.CodigosDeResposta.*;
+import static br.com.kod3.services.util.CodigoDeResposta.*;
 import static br.com.kod3.services.util.Messages.*;
 
 @ApplicationScoped
-public class DebtService {
+public class DebtService implements FinchatHandler {
 
     private final DebtRepository repository;
     private final TransactionService transactionService;
@@ -45,7 +46,8 @@ public class DebtService {
     }
 
     @Transactional
-    public CodigosDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo) {
+    @Override
+    public CodigoDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo) {
         Objects.requireNonNull(converted.getTransactionPayloadDto());
 
         if (converted.getData().toLowerCase().contains(cancela_transacao)) {

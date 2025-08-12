@@ -9,7 +9,8 @@ import br.com.kod3.models.user.User;
 import br.com.kod3.repositories.recurrence.RecurrenceRepository;
 import br.com.kod3.repositories.transaction.TransactionRepository;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
-import br.com.kod3.services.util.CodigosDeResposta;
+import br.com.kod3.services.util.CodigoDeResposta;
+import br.com.kod3.services.util.FinchatHandler;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -17,12 +18,12 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 
-import static br.com.kod3.services.util.CodigosDeResposta.*;
+import static br.com.kod3.services.util.CodigoDeResposta.*;
 import static br.com.kod3.services.util.Messages.*;
 import static br.com.kod3.services.util.Messages.erro_validacao_resposta_transacao;
 
 @ApplicationScoped
-public class RecurrenceService {
+public class RecurrenceService implements FinchatHandler {
     private final RecurrenceRepository repository;
     private final TransactionRepository transactionRepository;
 
@@ -49,7 +50,8 @@ public class RecurrenceService {
     }
 
     @Transactional
-    public CodigosDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo) {
+    @Override
+    public CodigoDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo) {
         Objects.requireNonNull(converted.getTransactionPayloadDto());
 
         if (converted.getData().toLowerCase().contains(cancela_transacao)) {
