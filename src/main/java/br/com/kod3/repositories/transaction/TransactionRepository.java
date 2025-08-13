@@ -1,6 +1,7 @@
 package br.com.kod3.repositories.transaction;
 
 import br.com.kod3.models.transaction.Transaction;
+import br.com.kod3.models.util.enums.TransactionType;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -71,6 +72,12 @@ public class TransactionRepository implements PanacheRepositoryBase<Transaction,
                 .map(Transaction::getValue)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal sumValueByUserIdAndType(String userId, TransactionType type) {
+        return find("SELECT SUM(value) FROM Transaction WHERE user.id = ?1 AND type = ?2 AND blocked = false", userId, type)
+                .project(BigDecimal.class)
+                .firstResult();
     }
 
 }

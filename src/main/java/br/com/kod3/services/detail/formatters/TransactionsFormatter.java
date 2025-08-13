@@ -16,7 +16,7 @@ import java.util.TreeMap;
 @ApplicationScoped
 public class TransactionsFormatter implements Formatter {
 
-    public String formatTransactionReport(List<Transaction> transactions) {
+    public String formatTransactionReport(List<Transaction> transactions, Integer allTimeTotalSpent, Integer allTimeTotalSaved) {
         BigDecimal periodTotalSpent = BigDecimal.ZERO;
         BigDecimal periodTotalSaved = BigDecimal.ZERO;
 
@@ -46,10 +46,10 @@ public class TransactionsFormatter implements Formatter {
             }
         }
 
-        return buildResponseList(periodTotalSpent, periodTotalSaved, groupedByDate, monthlyCategorySpending);
+        return buildResponseList(periodTotalSpent, periodTotalSaved, groupedByDate, monthlyCategorySpending, allTimeTotalSpent, allTimeTotalSaved);
     }
 
-    private String buildResponseList(BigDecimal totalSpent, BigDecimal totalSaved, Map<LocalDate, DailySummary> dailySummaries, Map<YearMonth, Map<Category, BigDecimal>> monthlySpending) {
+    private String buildResponseList(BigDecimal totalSpent, BigDecimal totalSaved, Map<LocalDate, DailySummary> dailySummaries, Map<YearMonth, Map<Category, BigDecimal>> monthlySpending, Integer allTimeTotalSpent, Integer allTimeTotalSaved) {
         FormatedStringBuilder response = new FormatedStringBuilder();
 
         dailySummaries.forEach((date, summary) -> {
@@ -82,6 +82,12 @@ public class TransactionsFormatter implements Formatter {
                 response.append(String.format("  Month Total: %.2f", monthTotal));
             });
         }
+
+        response.append("---");
+        response.append("***All time values***");
+        response.append("Total Spent: " + allTimeTotalSpent);
+        response.append("Total Saved: " + allTimeTotalSaved);
+        response.append("Difference: " + (allTimeTotalSpent - allTimeTotalSaved));
 
         return response.toString();
     }

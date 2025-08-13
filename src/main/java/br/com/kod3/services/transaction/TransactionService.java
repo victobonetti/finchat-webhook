@@ -117,4 +117,24 @@ public class TransactionService implements FinchatHandler {
     public BigDecimal getPaidValueFromDebt(String debtId, String uid) {
         return transactionRepository.getPaidValueFromDebt(debtId, uid);
     }
+
+    public BigDecimal sumExpenses(String uid) {
+        var tot = transactionRepository.sumValueByUserIdAndType(uid, TransactionType.EXPENSE);
+
+        if (tot == null) {
+            return BigDecimal.ZERO;
+        }
+
+        return tot;
+    }
+
+    public BigDecimal sumIncomes(String uid) {
+        var tot = transactionRepository.sumValueByUserIdAndType(uid, TransactionType.INCOME);
+
+        if (tot == null) {
+            return BigDecimal.ZERO;
+        }
+
+        return tot;
+    }
 }

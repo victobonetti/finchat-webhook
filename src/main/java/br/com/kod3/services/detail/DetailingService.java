@@ -12,6 +12,8 @@ import br.com.kod3.services.detail.formatters.TransactionsFormatter;
 import br.com.kod3.services.transaction.TransactionService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -45,11 +47,14 @@ public class DetailingService {
     public Detail getFormattedTransactions(String uid, LocalDate startDate, LocalDate endDate) {
         List<Transaction> userTransactions = transactionService.getTransactionsByUidAndPeriod(uid, startDate, endDate);
 
+        BigDecimal expensesTotal = transactionService.sumExpenses(uid);
+        BigDecimal incomesTotal = transactionService.sumIncomes(uid);
+
         if (userTransactions.isEmpty()) {
             return new Detail("No transactions found for the selected period.");
         }
 
-        return new Detail(tf.formatTransactionReport(userTransactions));
+        return new Detail(tf.formatTransactionReport(userTransactions, expensesTotal.intValue(), incomesTotal.intValue()));
     }
 
     public Detail getFormattedRecurrences(String uid) {
