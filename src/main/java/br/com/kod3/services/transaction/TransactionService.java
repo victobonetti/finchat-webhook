@@ -6,6 +6,7 @@ import br.com.kod3.models.recurrence.Recurrence;
 import br.com.kod3.models.transaction.Transaction;
 import br.com.kod3.models.transaction.TransactionConverter;
 import br.com.kod3.models.user.User;
+import br.com.kod3.models.util.enums.TransactionType;
 import br.com.kod3.repositories.transaction.TransactionRepository;
 import br.com.kod3.services.debt.DebtService;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
@@ -68,6 +69,7 @@ public class TransactionService implements FinchatHandler {
 
             Debt debt = null;
             Recurrence recurrence = null;
+            boolean blocked = false;
 
             if (idDebt != null) {
                 debt = debtService.getDebtById(idDebt);
@@ -89,8 +91,12 @@ public class TransactionService implements FinchatHandler {
 
             var shouldShowStreak = !streakService.hasTransactionToday(user.getId());
 
+            if (converted.getTransactionPayloadDto().getType().equals(TransactionType.INCOME) && data.contains(confirma_entrada_com_bloqueio)) {
+                blocked = true;
+            }
+
             createOne(
-                    TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user, debt, recurrence), user.getId());
+                    TransactionConverter.toEntity(converted.getTransactionPayloadDto(), user, debt, recurrence, blocked), user.getId());
             evo.send(registro_incluido);
 
             if (shouldShowStreak) {

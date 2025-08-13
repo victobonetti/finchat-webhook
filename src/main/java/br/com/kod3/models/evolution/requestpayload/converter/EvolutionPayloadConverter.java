@@ -53,7 +53,7 @@ public class EvolutionPayloadConverter {
       return builder.build();
     }
 
-    throw new RuntimeException("Erro ao converter webhook.");
+    throw new IllegalArgumentException("Erro ao converter webhook.");
   }
 
   private TransactionPayloadDto generateTransactionDto(WebhookBodyDto dto){
@@ -142,7 +142,7 @@ public class EvolutionPayloadConverter {
     } else if (title.equalsIgnoreCase(registrar_divida)) {
       return TransactionType.DEBT;
     }
-    throw new RuntimeException("Tipo indefinido: " + title);
+    throw new IllegalArgumentException("Tipo indefinido: " + title);
   }
 }
 

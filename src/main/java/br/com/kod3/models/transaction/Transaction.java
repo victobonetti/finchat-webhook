@@ -47,6 +47,9 @@ public class Transaction extends PanacheEntityBase {
   @Column(name = "currency", nullable = false)
   private String currency;
 
+  @Column(name = "blocked", nullable = false)
+  private Boolean blocked;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "debtId")
   private Debt debt;
