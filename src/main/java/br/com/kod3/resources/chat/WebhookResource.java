@@ -1,4 +1,4 @@
-package br.com.kod3.resources;
+package br.com.kod3.resources.chat;
 
 import static br.com.kod3.services.util.CodigoDeResposta.*;
 import static br.com.kod3.services.util.Messages.*;
@@ -9,7 +9,6 @@ import br.com.kod3.models.evolution.requestpayload.MessageType;
 import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.evolution.requestpayload.converter.EvolutionPayloadConverter;
-import br.com.kod3.models.util.enums.TransactionType;
 import br.com.kod3.models.user.User;
 import br.com.kod3.services.util.CodigoDeResposta;
 import br.com.kod3.services.debt.DebtService;
@@ -33,8 +32,8 @@ import java.util.Optional;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
-@Path("v1/webhook")
-public class MainResource {
+@Path("v1/external/webhook")
+public class WebhookResource {
 
     private final UserService userService;
     private final EvolutionApiService evolutionApiService;
@@ -43,7 +42,6 @@ public class MainResource {
     private final TransactionService transactionService;
     private final DebtService debtService;
     private final RecurrenceService recurrenceService;
-    private final Batch batch;
 
     @Inject
     @Broadcast
@@ -51,7 +49,7 @@ public class MainResource {
     Emitter<ConvertedDto> emitter;
 
     @Inject
-    public MainResource(
+    public WebhookResource(
             UserService userService,
             EvolutionApiService evolutionApiService,
             ResponseHandler res,
@@ -67,14 +65,6 @@ public class MainResource {
         this.transactionService = transactionService;
         this.debtService = debtService;
         this.recurrenceService = recurrenceService;
-        this.batch = batch;
-    }
-
-    @POST
-    @Path("batch")
-    public Response batch() {
-        batch.generateRecorrentTransactions();
-        return Response.ok().build();
     }
 
     @POST

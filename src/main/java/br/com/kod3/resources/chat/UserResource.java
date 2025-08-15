@@ -1,9 +1,8 @@
-package br.com.kod3.resources;
+package br.com.kod3.resources.chat;
 
 import br.com.kod3.models.streak.StreakResponseDto;
 import br.com.kod3.services.detail.DetailingService;
 import br.com.kod3.services.streak.StreakService;
-import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -12,7 +11,7 @@ import jakarta.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Path("v1/user")
+@Path("v1/external/user")
 public class UserResource {
 
     private final DetailingService detailingService;

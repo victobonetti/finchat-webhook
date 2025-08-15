@@ -1,4 +1,4 @@
-package br.com.kod3.resources;
+package br.com.kod3.processors;
 
 import br.com.kod3.clients.N8nApiClient;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
@@ -9,7 +9,7 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
-public class Processor {
+public class ChatResponseProcessor {
 
   @RestClient N8nApiClient client;
 
