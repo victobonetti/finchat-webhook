@@ -3,14 +3,19 @@ package br.com.kod3.models.verificationcode;
 import br.com.kod3.models.user.User;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Entity
 @Table(name = "CCTB005_VERIFICATION_CODE")
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class VerificationCode extends PanacheEntityBase {
 
     @Id
@@ -21,7 +26,7 @@ public class VerificationCode extends PanacheEntityBase {
     @Column(name = "code", nullable = false)
     public String code;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "userId", nullable = false)
     public User user;
 
@@ -29,5 +34,7 @@ public class VerificationCode extends PanacheEntityBase {
     public LocalDateTime expiresAt;
 
     @Column(name = "isUsed", nullable = false)
+    @Setter
     public Boolean isUsed = false;
+
 }
