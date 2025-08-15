@@ -51,7 +51,7 @@ public class DetailingService {
         BigDecimal incomesTotal = transactionService.sumIncomes(uid);
 
         if (userTransactions.isEmpty()) {
-            return new Detail("No transactions found for the selected period.");
+            return new Detail("Não foram encontradas transações pra esse período.");
         }
 
         return new Detail(tf.formatTransactionReport(userTransactions, expensesTotal.intValue(), incomesTotal.intValue()));
@@ -61,7 +61,7 @@ public class DetailingService {
         List<Recurrence> userTransactions = recurrenceService.getAllRecurrences(uid);
 
         if (userTransactions.isEmpty()) {
-            return new Detail("No transactions found for the selected period.");
+            return new Detail("Não foram encontradas recorrências pra esse período.");
         }
 
         return new Detail(rf.formatRecurrenceReport(userTransactions));
@@ -70,7 +70,7 @@ public class DetailingService {
     public Detail getFormattedDebts(String uid) {
         List<Debt> userDebts = debtService.getDebitsFromUser(uid);
 
-        return new Detail(df.formatDebtReport(userDebts));
+        return new Detail(df.formatDebtReport(userDebts, true));
     }
 
 
