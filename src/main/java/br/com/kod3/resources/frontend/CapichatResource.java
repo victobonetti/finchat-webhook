@@ -15,18 +15,16 @@ import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("v1/capi")
-@RequestScoped
 public class CapichatResource {
 
-    @Inject
-    private JsonWebToken jwt;
+    private final JsonWebToken jwt;
+    private final TransactionService transactionService;
 
     @Inject
-    TransactionService transactionService;
-
-    @Inject
-    @Claim(standard = Claims.phone_number)
-    private String phone;
+    public CapichatResource(JsonWebToken jwt, TransactionService transactionService) {
+        this.jwt = jwt;
+        this.transactionService = transactionService;
+    }
 
     @POST
     @Path("transactions")
