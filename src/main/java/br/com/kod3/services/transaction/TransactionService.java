@@ -142,37 +142,36 @@ public class TransactionService implements FinchatHandler {
     }
 
     public PaginatedResponse<TransactionResponseDto> getTransactions(@Valid TransactionsParams param, String uid) {
-        final PanacheQuery<Transaction> query;
-        final List<TransactionType> types = new ArrayList<>();
+        var queryBuilder = new StringBuilder("user.id = ?1");
+        var params = new ArrayList<Object>();
+        params.add(uid);
 
+        var types = new ArrayList<TransactionType>();
         if (param.findExpenses()) {
             types.add(TransactionType.EXPENSE);
         }
-
         if (param.findIncomes()) {
             types.add(TransactionType.INCOME);
         }
+        queryBuilder.append(" and type in ?2");
+        params.add(types);
 
+        int paramIndex = 3;
         if (param.dataIni() != null && param.dataFim() != null) {
-            if (param.showBlocked() && !param.showNonBlocked()) {
-                query = transactionRepository.find(
-                        "user.id = ?1 and createdAt > ?2 and createdAt <= ?3 and type in ?4 and blocked = true",
-                        uid, param.dataIni().atStartOfDay(), param.dataFim().atTime(23, 59, 59), types
-                );
-            } else if (!param.showBlocked() && param.showNonBlocked()) {
-                query = transactionRepository.find(
-                        "user.id = ?1 and createdAt > ?2 and createdAt <= ?3 and type in ?4 and blocked = false",
-                        uid, param.dataIni().atStartOfDay(), param.dataFim().atTime(23, 59, 59), types
-                );
-            } else {
-                query = transactionRepository.find(
-                        "user.id = ?1 and createdAt > ?2 and createdAt <= ?3 and type in ?4",
-                        uid, param.dataIni().atStartOfDay(), param.dataFim().atTime(23, 59, 59), types
-                );
-            }
-        } else {
-            query = transactionRepository.find("user.id = ?1 and type in ?2", uid, types);
+            queryBuilder.append(" and createdAt > ?").append(paramIndex++);
+            params.add(param.dataIni().atStartOfDay());
+
+            queryBuilder.append(" and createdAt <= ?").append(paramIndex++);
+            params.add(param.dataFim().atTime(23, 59, 59));
         }
+
+        if (param.showBlocked() && !param.showNonBlocked()) {
+            queryBuilder.append(" and blocked = true");
+        } else if (!param.showBlocked() && param.showNonBlocked()) {
+            queryBuilder.append(" and blocked = false");
+        }
+
+        var query = transactionRepository.find(queryBuilder.toString(), params.toArray());
 
         var listResponse = query
                 .page(param.pageIndex(), param.pageSize())
