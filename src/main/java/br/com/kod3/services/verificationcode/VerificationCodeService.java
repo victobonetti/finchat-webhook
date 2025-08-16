@@ -21,9 +21,12 @@ public class VerificationCodeService {
     @Inject
     UserService userService;
 
-    private Optional<VerificationCode> findCodeFromPhoneOptional(String telefone){
-        return verificationCodeRepository.find("where user.telefone = ?1 and expiresAt > ?2 and isUsed = false",
-                        telefone, LocalDateTime.now())
+    private Optional<VerificationCode> findCodeFromPhoneOptional(String telefone) {
+        return verificationCodeRepository
+                .find(
+                        "where user.telefone = ?1 and expiresAt > ?2 and isUsed = false",
+                        telefone,
+                        LocalDateTime.now())
                 .firstResultOptional();
     }
 
@@ -37,8 +40,8 @@ public class VerificationCodeService {
         if (opt.isPresent()) {
             var verificationCode = opt.get();
             if (verificationCode.code.equals(code)) {
-                // verificationCode.setIsUsed(true); TODO
-                // verificationCode.persistAndFlush();
+                verificationCode.setIsUsed(true);
+                verificationCode.persistAndFlush();
                 return true;
             }
         }
@@ -52,17 +55,18 @@ public class VerificationCodeService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
 
-            verificationCodeRepository.delete("user = ?1 and expiresAt > ?2 and isUsed = false",
-                    user, LocalDateTime.now());
+            verificationCodeRepository.delete(
+                    "user = ?1 and expiresAt > ?2 and isUsed = false", user, LocalDateTime.now());
 
             String code = generateSecureRandom6DigitCode();
 
-            VerificationCode verificationCode = VerificationCode.builder()
-                    .user(userOptional.get())
-                    .code(code)
-                    .isUsed(false)
-                    .expiresAt(LocalDateTime.now().plusMinutes(1000)) // Código válido por 1 minuto TODO
-                    .build();
+            VerificationCode verificationCode =
+                    VerificationCode.builder()
+                            .user(userOptional.get())
+                            .code(code)
+                            .isUsed(false)
+                            .expiresAt(LocalDateTime.now().plusMinutes(1))
+                            .build();
 
             verificationCodeRepository.persist(verificationCode);
 

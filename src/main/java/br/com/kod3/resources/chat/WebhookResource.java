@@ -10,141 +10,143 @@ import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.evolution.requestpayload.converter.EvolutionPayloadConverter;
 import br.com.kod3.models.user.User;
-import br.com.kod3.services.util.CodigoDeResposta;
 import br.com.kod3.services.debt.DebtService;
 import br.com.kod3.services.evolution.EvolutionApiService;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
 import br.com.kod3.services.recurrence.RecurrenceService;
-import br.com.kod3.services.util.FinchatHandler;
-import br.com.kod3.services.util.ResponseHandler;
 import br.com.kod3.services.transaction.TransactionService;
 import br.com.kod3.services.user.UserService;
+import br.com.kod3.services.util.CodigoDeResposta;
+import br.com.kod3.services.util.FinchatHandler;
+import br.com.kod3.services.util.ResponseHandler;
 import io.quarkus.logging.Log;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.util.Objects;
 import java.util.Optional;
-
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 @Path("v1/external/webhook")
 public class WebhookResource {
 
-    private final UserService userService;
-    private final EvolutionApiService evolutionApiService;
-    private final ResponseHandler res;
-    private final EvolutionPayloadConverter converter;
-    private final TransactionService transactionService;
-    private final DebtService debtService;
-    private final RecurrenceService recurrenceService;
+  private final UserService userService;
+  private final EvolutionApiService evolutionApiService;
+  private final ResponseHandler res;
+  private final EvolutionPayloadConverter converter;
+  private final TransactionService transactionService;
+  private final DebtService debtService;
+  private final RecurrenceService recurrenceService;
 
-    @Inject
-    @Broadcast
-    @Channel("my-channel")
-    Emitter<ConvertedDto> emitter;
+  @Inject
+  @Broadcast
+  @Channel("my-channel")
+  Emitter<ConvertedDto> emitter;
 
-    @Inject
-    public WebhookResource(
-            UserService userService,
-            EvolutionApiService evolutionApiService,
-            ResponseHandler res,
-            EvolutionPayloadConverter converter,
-            TransactionService transactionService,
-            DebtService debtService,
-            RecurrenceService recurrenceService,
-            Batch batch) {
-        this.userService = userService;
-        this.evolutionApiService = evolutionApiService;
-        this.res = res;
-        this.converter = converter;
-        this.transactionService = transactionService;
-        this.debtService = debtService;
-        this.recurrenceService = recurrenceService;
+  @Inject
+  public WebhookResource(
+      UserService userService,
+      EvolutionApiService evolutionApiService,
+      ResponseHandler res,
+      EvolutionPayloadConverter converter,
+      TransactionService transactionService,
+      DebtService debtService,
+      RecurrenceService recurrenceService,
+      Batch batch) {
+    this.userService = userService;
+    this.evolutionApiService = evolutionApiService;
+    this.res = res;
+    this.converter = converter;
+    this.transactionService = transactionService;
+    this.debtService = debtService;
+    this.recurrenceService = recurrenceService;
+  }
+
+  @POST
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response webhook(WebhookBodyDto body) {
+
+    final EvolutionMessageSender evo =
+        new EvolutionMessageSender(evolutionApiService, getPhone(body));
+    final ConvertedDto converted = convert(body, evo);
+    final String phone = converted.getTelefone();
+    final Optional<User> userOptional = userService.findByPhone(phone);
+
+    try {
+      if (userOptional.isEmpty()) {
+        return handleNewUser(converted.getType(), evo);
+      }
+
+      final User user = userOptional.get();
+      converted.setUserId(user.getId()); // importante - não remover
+      return handleRegisteredUser(user, converted, evo);
+
+    } catch (Exception e) {
+      Log.info(erro_interno);
+      Log.error(e);
+      evo.send(erro_interno);
+      return res.send(ERRO_INTERNO, null);
+    }
+  }
+
+  private ConvertedDto convert(WebhookBodyDto body, EvolutionMessageSender evo) {
+    ConvertedDto converted;
+    try {
+      converted = converter.parse(body);
+    } catch (RuntimeException r) {
+      evo.send(erro_parse);
+      throw r;
+    }
+    return converted;
+  }
+
+  private Response handleNewUser(MessageType type, EvolutionMessageSender evo) {
+    evo.send(usuario_sem_registro);
+    return res.send(SOLICITA_CADASTRO, type);
+  }
+
+  private Response handleRegisteredUser(
+      User user, ConvertedDto converted, EvolutionMessageSender evo) {
+    final MessageType type = converted.getType();
+    final boolean isPrompt =
+        Objects.isNull(converted.getTransactionPayloadDto())
+            && !type.equals(MessageType.listResponseMessage);
+
+    if (isPrompt) {
+      evo.like(converted.getRemoteJid(), converted.getMessageId());
+      emitter.send(converted);
+      return res.send(ENVIA_PROMPT, type);
     }
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response webhook(WebhookBodyDto body) {
-
-        final EvolutionMessageSender evo = new EvolutionMessageSender(evolutionApiService, getPhone(body));
-        final ConvertedDto converted = convert(body, evo);
-        final String phone = converted.getTelefone();
-        final Optional<User> userOptional = userService.findByPhone(phone);
-
-        try {
-            if (userOptional.isEmpty()) {
-                return handleNewUser(converted.getType(), evo);
-            }
-
-            final User user = userOptional.get();
-            converted.setUserId(user.getId()); // importante - não remover
-            return handleRegisteredUser(user, converted, evo);
-
-        } catch (Exception e) {
-            Log.info(erro_interno);
-            Log.error(e);
-            evo.send(erro_interno);
-            return res.send(ERRO_INTERNO, null);
-        }
+    if (Objects.isNull(converted.getTransactionPayloadDto())
+        || !type.equals(MessageType.listResponseMessage)) {
+      evo.send(erro_validacao_resposta_transacao);
+      return res.send(CASO_DESCONHECIDO, type);
     }
 
-    private ConvertedDto convert(WebhookBodyDto body, EvolutionMessageSender evo) {
-        ConvertedDto converted;
-        try {
-            converted = converter.parse(body);
-        } catch (RuntimeException r) {
-            evo.send(erro_parse);
-            throw r;
-        }
-        return converted;
-    }
+    return res.send(exec(user, converted, evo), type);
+  }
 
-    private Response handleNewUser(MessageType type, EvolutionMessageSender evo) {
-        evo.send(usuario_sem_registro);
-        return res.send(SOLICITA_CADASTRO, type);
-    }
+  private CodigoDeResposta exec(User user, ConvertedDto converted, EvolutionMessageSender evo) {
+    Objects.requireNonNull(converted.getTransactionPayloadDto());
+    var t = converted.getTransactionPayloadDto().getType();
 
-    private Response handleRegisteredUser(User user, ConvertedDto converted, EvolutionMessageSender evo) {
-        final MessageType type = converted.getType();
-        final boolean isPrompt = Objects.isNull(converted.getTransactionPayloadDto()) && !type.equals(MessageType.listResponseMessage);
-
-        if (isPrompt) {
-            evo.like(converted.getRemoteJid(), converted.getMessageId());
-            emitter.send(converted);
-            return res.send(ENVIA_PROMPT, type);
-        }
-
-        if (Objects.isNull(converted.getTransactionPayloadDto()) || !type.equals(MessageType.listResponseMessage)) {
-            evo.send(erro_validacao_resposta_transacao);
-            return res.send(CASO_DESCONHECIDO, type);
-        }
-
-        return res.send(exec(user, converted, evo), type);
-    }
-
-    private CodigoDeResposta exec(User user, ConvertedDto converted, EvolutionMessageSender evo) {
-        Objects.requireNonNull(converted.getTransactionPayloadDto());
-        var t = converted.getTransactionPayloadDto().getType();
-
-        FinchatHandler handler = switch (t) {
-            case EXPENSE,INCOME -> transactionService;
-            case RECURRING_EXPENSE,RECURRING_INCOME -> recurrenceService;
-            case DEBT -> debtService;
+    FinchatHandler handler =
+        switch (t) {
+          case EXPENSE, INCOME -> transactionService;
+          case RECURRING_EXPENSE, RECURRING_INCOME -> recurrenceService;
+          case DEBT -> debtService;
         };
 
-        if (Objects.isNull(handler)){
-            evo.send(erro_validacao_resposta_transacao);
-            return ERRO_VALIDACAO_RESPOSTA_TRANSACAO;
-        }
-
-        return handler.handle(converted, user, evo);
-
+    if (Objects.isNull(handler)) {
+      evo.send(erro_validacao_resposta_transacao);
+      return ERRO_VALIDACAO_RESPOSTA_TRANSACAO;
     }
 
+    return handler.handle(converted, user, evo);
+  }
 }

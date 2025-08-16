@@ -1,18 +1,17 @@
 package br.com.kod3.models.debt;
 
-import br.com.kod3.models.util.enums.Category;
 import br.com.kod3.models.transaction.Transaction;
 import br.com.kod3.models.user.User;
+import br.com.kod3.models.util.enums.Category;
 import br.com.kod3.models.util.enums.SituacaoEnum;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.*;
-import org.hibernate.annotations.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.*;
+import org.hibernate.annotations.*;
 
 @Builder
 @Entity
@@ -47,20 +46,15 @@ public class Debt extends PanacheEntityBase {
   @JoinColumn(name = "userId", nullable = false)
   private User user;
 
-  @OneToMany(
-          mappedBy = "debt",
-          fetch = FetchType.LAZY
-  )
+  @OneToMany(mappedBy = "debt", fetch = FetchType.LAZY)
   @Getter
   private List<Transaction> transactions;
 
   @CreationTimestamp
-  @Column(name = "createdAt" , nullable = false)
+  @Column(name = "createdAt", nullable = false)
   private LocalDateTime createdAt;
 
   @UpdateTimestamp
-  @Column(name = "updatedAt" , nullable = false)
+  @Column(name = "updatedAt", nullable = false)
   private LocalDateTime updatedAt;
-
-
 }

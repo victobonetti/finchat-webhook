@@ -6,24 +6,23 @@ import lombok.Getter;
 
 @Getter
 public enum Category {
-    // Gastos, dívidas e pagamentos
-    ALIMENTACAO("Alimentação"),
-    TRANSPORTE("Transporte"),
-    EDUCACAO("Educação"),
-    SAUDE("Saúde"),
-    LAZER("Lazer"),
-    MORADIA("Moradia"),
-    CONTAS("Contas"),
-    ROUPAS("Roupas"),
+  // Gastos, dívidas e pagamentos
+  ALIMENTACAO("Alimentação"),
+  TRANSPORTE("Transporte"),
+  EDUCACAO("Educação"),
+  SAUDE("Saúde"),
+  LAZER("Lazer"),
+  MORADIA("Moradia"),
+  CONTAS("Contas"),
+  ROUPAS("Roupas"),
 
-    // Entradas e receitas
-    SALARIO("Salário"),
-    RENDA_EXTRA("Renda Extra"),
-    INVESTIMENTOS("Investimentos"),
+  // Entradas e receitas
+  SALARIO("Salário"),
+  RENDA_EXTRA("Renda Extra"),
+  INVESTIMENTOS("Investimentos"),
 
-    // callback
-    OUTROS("Outros");
-
+  // callback
+  OUTROS("Outros");
 
   private final String descricao;
 

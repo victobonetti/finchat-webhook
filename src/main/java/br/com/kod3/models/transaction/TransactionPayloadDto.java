@@ -1,11 +1,10 @@
 package br.com.kod3.models.transaction;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 import br.com.kod3.models.recurrence.PeriodEnum;
 import br.com.kod3.models.util.enums.Category;
 import br.com.kod3.models.util.enums.TransactionType;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
