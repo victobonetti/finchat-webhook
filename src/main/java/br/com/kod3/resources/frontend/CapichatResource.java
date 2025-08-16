@@ -1,0 +1,39 @@
+package br.com.kod3.resources.frontend;
+
+import br.com.kod3.models.transaction.TransactionsParams;
+import br.com.kod3.services.transaction.TransactionService;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.Claims;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
+@Path("v1/capi")
+@RequestScoped
+public class CapichatResource {
+
+    @Inject
+    private JsonWebToken jwt;
+
+    @Inject
+    TransactionService transactionService;
+
+    @Inject
+    @Claim(standard = Claims.phone_number)
+    private String phone;
+
+    @POST
+    @Path("transactions")
+    @RolesAllowed({ "User" })
+    public Response transactions(@Valid TransactionsParams param){
+        var uid = jwt.getName();
+        var transactions = transactionService.getTransactions(param, uid);
+        return Response.ok().entity(transactions).build();
+    }
+}

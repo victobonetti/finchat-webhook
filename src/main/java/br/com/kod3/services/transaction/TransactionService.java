@@ -3,9 +3,9 @@ package br.com.kod3.services.transaction;
 import br.com.kod3.models.debt.Debt;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
 import br.com.kod3.models.recurrence.Recurrence;
-import br.com.kod3.models.transaction.Transaction;
-import br.com.kod3.models.transaction.TransactionConverter;
+import br.com.kod3.models.transaction.*;
 import br.com.kod3.models.user.User;
+import br.com.kod3.models.util.PaginatedResponse;
 import br.com.kod3.models.util.enums.TransactionType;
 import br.com.kod3.repositories.transaction.TransactionRepository;
 import br.com.kod3.services.debt.DebtService;
@@ -16,10 +16,13 @@ import br.com.kod3.services.util.CodigoDeResposta;
 import br.com.kod3.services.util.FinchatHandler;
 import io.quarkus.cache.CacheInvalidate;
 import io.quarkus.cache.CacheKey;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.core.Response;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -137,4 +140,54 @@ public class TransactionService implements FinchatHandler {
 
         return tot;
     }
+
+    public PaginatedResponse<TransactionResponseDto> getTransactions(@Valid TransactionsParams param, String uid) {
+        final PanacheQuery<Transaction> query;
+        final List<TransactionType> types = new ArrayList<>();
+
+        if (param.findExpenses()) {
+            types.add(TransactionType.EXPENSE);
+        }
+
+        if (param.findIncomes()) {
+            types.add(TransactionType.INCOME);
+        }
+
+        if (param.dataIni() != null && param.dataFim() != null) {
+            if (param.showBlocked() && !param.showNonBlocked()) {
+                query = transactionRepository.find(
+                        "user.id = ?1 and createdAt > ?2 and createdAt <= ?3 and type in ?4 and blocked = true",
+                        uid, param.dataIni().atStartOfDay(), param.dataFim().atTime(23, 59, 59), types
+                );
+            } else if (!param.showBlocked() && param.showNonBlocked()) {
+                query = transactionRepository.find(
+                        "user.id = ?1 and createdAt > ?2 and createdAt <= ?3 and type in ?4 and blocked = false",
+                        uid, param.dataIni().atStartOfDay(), param.dataFim().atTime(23, 59, 59), types
+                );
+            } else {
+                query = transactionRepository.find(
+                        "user.id = ?1 and createdAt > ?2 and createdAt <= ?3 and type in ?4",
+                        uid, param.dataIni().atStartOfDay(), param.dataFim().atTime(23, 59, 59), types
+                );
+            }
+        } else {
+            query = transactionRepository.find("user.id = ?1 and type in ?2", uid, types);
+        }
+
+        var listResponse = query
+                .page(param.pageIndex(), param.pageSize())
+                .stream()
+                .map(TransactionMapper::fromEntity)
+                .toList();
+
+        var count = query.count();
+
+        return new PaginatedResponse<>(
+                listResponse,
+                param.pageIndex(),
+                listResponse.size(),
+                count
+        );
+    }
+
 }

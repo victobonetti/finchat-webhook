@@ -37,8 +37,8 @@ public class VerificationCodeService {
         if (opt.isPresent()) {
             var verificationCode = opt.get();
             if (verificationCode.code.equals(code)) {
-                verificationCode.setIsUsed(true);
-                verificationCode.persistAndFlush();
+                // verificationCode.setIsUsed(true); TODO
+                // verificationCode.persistAndFlush();
                 return true;
             }
         }
@@ -61,7 +61,7 @@ public class VerificationCodeService {
                     .user(userOptional.get())
                     .code(code)
                     .isUsed(false)
-                    .expiresAt(LocalDateTime.now().plusMinutes(1)) // Código válido por 1 minuto
+                    .expiresAt(LocalDateTime.now().plusMinutes(1000)) // Código válido por 1 minuto TODO
                     .build();
 
             verificationCodeRepository.persist(verificationCode);

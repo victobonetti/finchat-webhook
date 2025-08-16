@@ -4,6 +4,8 @@ import br.com.kod3.models.verificationcode.CreateVerificationCodeRequestDto;
 import br.com.kod3.models.verificationcode.ValidateVerificationCodeRequestDto;
 import br.com.kod3.services.evolution.EvolutionApiService;
 import br.com.kod3.services.evolution.EvolutionMessageSender;
+import br.com.kod3.services.security.SecurityService;
+import br.com.kod3.services.user.UserService;
 import br.com.kod3.services.verificationcode.VerificationCodeService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -21,11 +23,15 @@ public class LoginResource {
 
     private final EvolutionApiService evolutionApiService;
     private final VerificationCodeService verificationCodeService;
+    private final SecurityService securityService;
+    private final UserService userService;
 
     @Inject
-    public LoginResource(EvolutionApiService evolutionApiService, VerificationCodeService verificationCodeService) {
+    public LoginResource(EvolutionApiService evolutionApiService, VerificationCodeService verificationCodeService, SecurityService securityService, UserService userService) {
         this.evolutionApiService = evolutionApiService;
         this.verificationCodeService = verificationCodeService;
+        this.securityService = securityService;
+        this.userService = userService;
     }
 
     @POST
@@ -59,8 +65,14 @@ public class LoginResource {
     @Consumes(APPLICATION_JSON)
     public Response validateVerificationCode(@Valid ValidateVerificationCodeRequestDto request){
         if (verificationCodeService.isValid(request.telefone(), request.code())) {
-            return Response.ok().build();
+            var opt = userService.findByPhone(request.telefone());
+            if (opt.isPresent()) {
+                var user = opt.get();
+                var tkn = securityService.generateTokenFor(user);
+                return Response.accepted().entity(tkn).build();
+            }
         }
+
         return Response.status(Response.Status.UNAUTHORIZED).build();
     }
 }
