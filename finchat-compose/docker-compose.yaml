@@ -1,6 +1,6 @@
 services:
   finchat:
-    image: victobonetti/finchat:2.1.0
+    image: victobonetti/finchat:main
     container_name: finchat_app
     restart: always
     depends_on:
