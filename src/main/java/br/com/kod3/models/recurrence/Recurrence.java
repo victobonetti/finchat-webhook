@@ -1,12 +1,16 @@
 package br.com.kod3.models.recurrence;
 
-import br.com.kod3.models.util.enums.Category;
 import br.com.kod3.models.transaction.Transaction;
-import br.com.kod3.models.util.enums.TransactionType;
 import br.com.kod3.models.user.User;
+import br.com.kod3.models.util.enums.Category;
 import br.com.kod3.models.util.enums.SituacaoEnum;
+import br.com.kod3.models.util.enums.TransactionType;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,11 +18,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Builder
 @Entity
@@ -70,9 +69,7 @@ public class Recurrence extends PanacheEntityBase {
   @JoinColumn(name = "userId", nullable = false)
   private User user;
 
-  @OneToMany(
-          mappedBy = "recurrence",
-          fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "recurrence", fetch = FetchType.LAZY)
   @Getter
   private List<Transaction> transactions;
 

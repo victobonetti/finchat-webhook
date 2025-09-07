@@ -25,5 +25,4 @@ public class EvolutionMessageSender {
     var dto = new EvolutionReactionDto(remoteJid, messageId);
     evolutionApiService.sendReaction(dto);
   }
-
 }

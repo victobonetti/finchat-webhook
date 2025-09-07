@@ -5,4 +5,5 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class VerificationCodeRepository implements PanacheRepositoryBase<VerificationCode, String> {}
+public class VerificationCodeRepository
+    implements PanacheRepositoryBase<VerificationCode, String> {}

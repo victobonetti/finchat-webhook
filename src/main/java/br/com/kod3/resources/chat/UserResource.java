@@ -7,60 +7,61 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Path("v1/external/user")
 public class UserResource {
 
-    private final DetailingService detailingService;
-    private final StreakService streakService;
+  private final DetailingService detailingService;
+  private final StreakService streakService;
 
-    @Inject
-    public UserResource(DetailingService detailingService, StreakService streakService) {
-        this.detailingService = detailingService;
-        this.streakService = streakService;
-    }
+  @Inject
+  public UserResource(DetailingService detailingService, StreakService streakService) {
+    this.detailingService = detailingService;
+    this.streakService = streakService;
+  }
 
-    @GET
-    @Path("/{uid}/streak")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserStreak(@PathParam("uid") String userId){
-        Objects.requireNonNull(userId);
+  @GET
+  @Path("/{uid}/streak")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getUserStreak(@PathParam("uid") String userId) {
+    Objects.requireNonNull(userId);
 
-        var response = new StreakResponseDto(userId, streakService.getStreakFromUserId(userId));
-        return Response.ok().entity(response).build();
-    }
+    var response = new StreakResponseDto(userId, streakService.getStreakFromUserId(userId));
+    return Response.ok().entity(response).build();
+  }
 
-    @GET
-    @Path("{uid}/transactions")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getTransactionsFromUser(@PathParam("uid") String uid, @QueryParam("dtIni") LocalDate dtIni, @QueryParam("dtFim") LocalDate dtFim) {
-        Objects.requireNonNull(uid);
-        Objects.requireNonNull(dtIni);
-        Objects.requireNonNull(dtFim);
+  @GET
+  @Path("{uid}/transactions")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getTransactionsFromUser(
+      @PathParam("uid") String uid,
+      @QueryParam("dtIni") LocalDate dtIni,
+      @QueryParam("dtFim") LocalDate dtFim) {
+    Objects.requireNonNull(uid);
+    Objects.requireNonNull(dtIni);
+    Objects.requireNonNull(dtFim);
 
-        var response = detailingService.getFormattedTransactions(uid, dtIni, dtFim);
-        return Response.ok(response).build();
-    }
+    var response = detailingService.getFormattedTransactions(uid, dtIni, dtFim);
+    return Response.ok(response).build();
+  }
 
-    @GET
-    @Path("{uid}/recurring-transactions")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getRecurrencesFromUser(@PathParam("uid") String uid) {
-        Objects.requireNonNull(uid);
+  @GET
+  @Path("{uid}/recurring-transactions")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getRecurrencesFromUser(@PathParam("uid") String uid) {
+    Objects.requireNonNull(uid);
 
-        return Response.ok(detailingService.getFormattedRecurrences(uid)).build();
-    }
+    return Response.ok(detailingService.getFormattedRecurrences(uid)).build();
+  }
 
-    @GET
-    @Path("{uid}/debts")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getDebtsFromUser(@PathParam("uid") String uid) {
-        Objects.requireNonNull(uid);
+  @GET
+  @Path("{uid}/debts")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getDebtsFromUser(@PathParam("uid") String uid) {
+    Objects.requireNonNull(uid);
 
-        return Response.ok(detailingService.getFormattedDebts(uid)).build();
-    }
-
+    return Response.ok(detailingService.getFormattedDebts(uid)).build();
+  }
 }

@@ -1,5 +1,8 @@
 package br.com.kod3.services.debt;
 
+import static br.com.kod3.services.util.CodigoDeResposta.*;
+import static br.com.kod3.services.util.Messages.*;
+
 import br.com.kod3.models.debt.Debt;
 import br.com.kod3.models.debt.DebtConverter;
 import br.com.kod3.models.evolution.requestpayload.converter.ConvertedDto;
@@ -13,64 +16,60 @@ import br.com.kod3.services.util.FinchatHandler;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import static br.com.kod3.services.util.CodigoDeResposta.*;
-import static br.com.kod3.services.util.Messages.*;
-
 @ApplicationScoped
 public class DebtService implements FinchatHandler {
 
-    private final DebtRepository repository;
-    private final TransactionService transactionService;
+  private final DebtRepository repository;
+  private final TransactionService transactionService;
 
-    @Inject
-    public DebtService(DebtRepository repository, TransactionService transactionService) {
-        this.repository = repository;
-        this.transactionService = transactionService;
+  @Inject
+  public DebtService(DebtRepository repository, TransactionService transactionService) {
+    this.repository = repository;
+    this.transactionService = transactionService;
+  }
+
+  private void createOne(Debt entity) {
+    repository.persist(entity);
+  }
+
+  public List<Debt> getDebitsFromUser(String uid) {
+    return repository.find("user.id = ?1", uid).list();
+  }
+
+  public Debt getDebtById(String debtId) {
+    return repository.findById(debtId);
+  }
+
+  @Transactional
+  @Override
+  public CodigoDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo) {
+    Objects.requireNonNull(converted.getTransactionPayloadDto());
+
+    if (converted.getData().toLowerCase().contains(cancela_transacao)) {
+      evo.send(registro_cancelado);
+      return CANCELA_TRANSACAO;
     }
 
-    private void createOne(Debt entity) {
-        repository.persist(entity);
+    if (converted.getData().toLowerCase().contains(confirma_transacao)) {
+      createOne(DebtConverter.toEntity(converted.getTransactionPayloadDto(), user));
+
+      evo.send(divida_criada);
+      return CONFIRMA_TRANSACAO;
     }
 
-    public List<Debt> getDebitsFromUser(String uid) {
-        return repository.find("user.id = ?1", uid).list();
-    }
+    evo.send(erro_validacao_resposta_transacao);
+    return ERRO_INTERNO;
+  }
 
-    public Debt getDebtById(String debtId) {
-        return repository.findById(debtId);
-    }
+  public BigDecimal getPaidValue(String debtId, String uid) {
+    return transactionService.getPaidValueFromDebt(debtId, uid);
+  }
 
-    @Transactional
-    @Override
-    public CodigoDeResposta handle(ConvertedDto converted, User user, EvolutionMessageSender evo) {
-        Objects.requireNonNull(converted.getTransactionPayloadDto());
-
-        if (converted.getData().toLowerCase().contains(cancela_transacao)) {
-            evo.send(registro_cancelado);
-            return CANCELA_TRANSACAO;
-        }
-
-        if (converted.getData().toLowerCase().contains(confirma_transacao)) {
-            createOne(DebtConverter.toEntity(converted.getTransactionPayloadDto(), user));
-
-            evo.send(divida_criada);
-            return CONFIRMA_TRANSACAO;
-        }
-
-        evo.send(erro_validacao_resposta_transacao);
-        return ERRO_INTERNO;
-    }
-
-    public BigDecimal getPaidValue(String debtId, String uid) {
-        return transactionService.getPaidValueFromDebt(debtId, uid);
-    }
-
-    public void baixar(String idDebt) {
-        repository.update("set situacao = ?1 where id = ?2", SituacaoEnum.INATIVO, idDebt);
-    }
+  public void baixar(String idDebt) {
+    repository.update("set situacao = ?1 where id = ?2", SituacaoEnum.INATIVO, idDebt);
+  }
 }

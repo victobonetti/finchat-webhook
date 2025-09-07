@@ -17,8 +17,8 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Path("v1/capi")
 public class CapichatResource {
 
-    private final JsonWebToken jwt;
-    private final TransactionService transactionService;
+  private final JsonWebToken jwt;
+  private final TransactionService transactionService;
 
     @Inject
     public CapichatResource(JsonWebToken jwt, TransactionService transactionService) {

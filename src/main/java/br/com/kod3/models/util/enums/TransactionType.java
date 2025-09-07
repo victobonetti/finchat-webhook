@@ -2,9 +2,9 @@ package br.com.kod3.models.util.enums;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import lombok.Getter;
 import java.util.Arrays;
 import java.util.Objects;
+import lombok.Getter;
 
 public enum TransactionType {
   EXPENSE(0),
@@ -13,23 +13,23 @@ public enum TransactionType {
   DEBT(3),
   INCOME(4);
 
-  @Getter
-  private final Integer code;
+  @Getter private final Integer code;
 
   TransactionType(Integer code) {
     this.code = code;
   }
 
-    public static TransactionType fromCode(Integer code) {
+  public static TransactionType fromCode(Integer code) {
     Objects.requireNonNull(code);
     return Arrays.stream(TransactionType.values())
-            .filter(t -> Objects.equals(t.code, code))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Invalid TransactionType code: " + code));
+        .filter(t -> Objects.equals(t.code, code))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Invalid TransactionType code: " + code));
   }
 
   @Converter(autoApply = true)
-  public static class TransactionTypeConverter implements AttributeConverter<TransactionType, Integer> {
+  public static class TransactionTypeConverter
+      implements AttributeConverter<TransactionType, Integer> {
 
     @Override
     public Integer convertToDatabaseColumn(TransactionType attribute) {

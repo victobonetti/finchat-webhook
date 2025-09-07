@@ -1,17 +1,17 @@
 package br.com.kod3.models.evolution.requestpayload.converter;
 
+import static br.com.kod3.services.util.Messages.*;
+
 import br.com.kod3.models.evolution.requestpayload.MessageType;
 import br.com.kod3.models.evolution.requestpayload.WebhookBodyDto;
 import br.com.kod3.models.recurrence.PeriodEnum;
-import br.com.kod3.models.util.enums.Category;
 import br.com.kod3.models.transaction.TransactionPayloadDto;
+import br.com.kod3.models.util.enums.Category;
 import br.com.kod3.models.util.enums.TransactionType;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
-
-import static br.com.kod3.services.util.Messages.*;
 
 @ApplicationScoped
 public class EvolutionPayloadConverter {
@@ -44,7 +44,8 @@ public class EvolutionPayloadConverter {
     if (type.equals(MessageType.listResponseMessage)) {
       builder.data(dto.data().message().listResponseMessage().title());
 
-      var isTransactionPattern = dto.data().contextInfo().quotedMessage().listMessage().title().contains("Registrar ");
+      var isTransactionPattern =
+          dto.data().contextInfo().quotedMessage().listMessage().title().contains("Registrar ");
 
       if (isTransactionPattern) {
         builder.transactionPayloadDto(generateTransactionDto(dto));
@@ -56,13 +57,12 @@ public class EvolutionPayloadConverter {
     throw new IllegalArgumentException("Erro ao converter webhook.");
   }
 
-  private TransactionPayloadDto generateTransactionDto(WebhookBodyDto dto){
+  private TransactionPayloadDto generateTransactionDto(WebhookBodyDto dto) {
     var q = dto.data().contextInfo().quotedMessage().listMessage().description().split("\n");
 
     String title = getTitle(dto);
     TransactionType type = getType(title);
     LocalDate date = extractDate();
-
 
     String descricao = "";
     String categoria = "";
@@ -71,7 +71,6 @@ public class EvolutionPayloadConverter {
     String idRecurrence = "";
     String idDebt = "";
     String periodoStr = "";
-
 
     if (q.length >= 1) {
       descricao = q[0].replace("Descrição: ", "");
@@ -99,31 +98,31 @@ public class EvolutionPayloadConverter {
       }
     }
 
-
     final String currency = currencyAndVal.replaceAll("[\\d\\s.,]+", "");
-    final BigDecimal val = new BigDecimal(currencyAndVal.replaceAll("[^\\d.,]+", "")); // Retira caracteres especiais
+    final BigDecimal val =
+        new BigDecimal(currencyAndVal.replaceAll("[^\\d.,]+", "")); // Retira caracteres especiais
 
     return TransactionPayloadDto.builder()
-            .description(descricao)
-            .category(Category.fromDescricao(categoria))
-            .value(val)
-            .currency(currency)
-            .period(PeriodEnum.fromString(periodoStr))
-            .date(date)
-            .type(type)
-            .idRecurrence(!idRecurrence.isBlank() ? idRecurrence : null)
-            .idDebt(!idDebt.isBlank() ? idDebt : null)
-            .build();
+        .description(descricao)
+        .category(Category.fromDescricao(categoria))
+        .value(val)
+        .currency(currency)
+        .period(PeriodEnum.fromString(periodoStr))
+        .date(date)
+        .type(type)
+        .idRecurrence(!idRecurrence.isBlank() ? idRecurrence : null)
+        .idDebt(!idDebt.isBlank() ? idDebt : null)
+        .build();
   }
 
-  private String getTitle(WebhookBodyDto body){
+  private String getTitle(WebhookBodyDto body) {
     return body.data()
-            .message()
-            .listResponseMessage()
-            .contextInfo()
-            .quotedMessage()
-            .listMessage()
-            .title();
+        .message()
+        .listResponseMessage()
+        .contextInfo()
+        .quotedMessage()
+        .listMessage()
+        .title();
   }
 
   private LocalDate extractDate() {
@@ -145,4 +144,3 @@ public class EvolutionPayloadConverter {
     throw new IllegalArgumentException("Tipo indefinido: " + title);
   }
 }
-
