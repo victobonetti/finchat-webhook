@@ -111,4 +111,4 @@ jobs:
           script: |
             cd ~/composes/finchat-compose
             docker compose pull
-            docker compose up -d --force-recreate --remove-orphans
+            docker compose -f docker-compose.yaml up -d --force-recreate --remove-orphans
