@@ -1,0 +1,52 @@
+services:
+  finchat:
+    image: victobonetti/finchat:2.1.0
+    container_name: finchat_app
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      # Banco de Dados PostgreSQL
+      - DB_KIND=postgresql
+      - DB_USERNAME=postgres.mqyhdriempgqxolngeqb
+      - DB_PASSWORD=37xGMVOa7jlrAd1M0K5VJvgfDWAyv9JpN5mDmSDu8BKbD71k8c
+      - DB_JDBC_URL=jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:5432/postgres
+      - DB_ACQUISITION_TIMEOUT=30S
+      - DB_SCHEMA_STRATEGY=update
+
+      # API externa
+      - EVOLUTION_API_URL=https://evo-eo4kkc8ssckggkk0wos008ww.wwwacedo.com
+      - EVO_API_KEY=FVQGFV0Rdc3wnyHuPQULx0maEUhOviTm
+      - PROCESSING_URL=https://n8n-nk44c4gg4o8w8s080kkwww80.wwwacedo.com/webhook/464ff99c-60ed-4f44-bdba-7f64675684bb
+
+      # Logging do Rest Client
+      - REST_CLIENT_LOGGING_SCOPE=request-response
+      - REST_CLIENT_BODY_LIMIT=5000
+      - REST_CLIENT_LOGGING_LEVEL=INFO
+
+      # RabbitMQ (AMQP) - Updated to connect to the local container
+      - AMQP_HOST=rabbitmq
+      - AMQP_PORT=5672
+      - AMQP_USERNAME=user
+      - AMQP_PASSWORD=password
+
+      # Imagem do container
+      - CONTAINER_IMAGE_BUILDER=docker
+    ports:
+      - "3000:8080"
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    restart: always
+    ports:
+      # Port for the application to connect
+      - "5672:5672"
+      # Port for the Management UI (accessible in your browser)
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASSWORD=password
+    volumes:
+      # Mount the definitions file to be loaded on startup
+      - ./definitions.json:/etc/rabbitmq/definitions.json
