@@ -88,19 +88,16 @@ jobs:
       # 1. Checks-out your repository so it can access the docker-compose files
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # 2. Copy the docker-compose files to the server via SCP
-      #    This uses a secure action to transfer your files.
-      #    You will need to add secrets for SSH_HOST, SSH_USERNAME, and SSH_PRIVATE_KEY.
+        
       - name: Copy files via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22 # Default SSH port
+          port: 22
           source: "finchat-compose/*"
-          target: "/etc/kod3/finchat-compose"
+          target: "~/composes/finchat-compose"
 
       # 3. SSH into the server and restart the application using Docker Compose
       #    This will pull the latest Docker image and restart your services.
@@ -112,6 +109,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22 # Default SSH port
           script: |
-            cd /etc/kod3/finchat-compose
+            cd ~/composes/finchat-compose
             docker compose pull
             docker compose up -d --force-recreate --remove-orphans
