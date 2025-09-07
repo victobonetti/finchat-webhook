@@ -97,7 +97,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           source: "finchat-compose/*"
-          target: "~/composes/finchat-compose"
+          target: "~/composes"
 
       # 3. SSH into the server and restart the application using Docker Compose
       #    This will pull the latest Docker image and restart your services.
